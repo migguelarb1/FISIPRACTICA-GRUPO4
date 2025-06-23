@@ -4,10 +4,10 @@ class Footer extends StatefulWidget {
   const Footer({super.key});
 
   @override
-  _FooterState createState() => _FooterState();
+  FooterState createState() => FooterState();
 }
 
-class _FooterState extends State<Footer> {
+class FooterState extends State<Footer> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
@@ -24,7 +24,7 @@ class _FooterState extends State<Footer> {
         color: Color(0xFF1E3984),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
+            color: Colors.grey.withValues(alpha: 0.5),
             blurRadius: 7,
             offset: Offset(0, -3),
           ),

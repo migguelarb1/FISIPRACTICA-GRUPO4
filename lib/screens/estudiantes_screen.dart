@@ -6,10 +6,10 @@ class EstudiantesScreen extends StatefulWidget {
   const EstudiantesScreen({super.key});
 
   @override
-  _EstudiantesScreenState createState() => _EstudiantesScreenState();
+  EstudiantesScreenState createState() => EstudiantesScreenState();
 }
 
-class _EstudiantesScreenState extends State<EstudiantesScreen> {
+class EstudiantesScreenState extends State<EstudiantesScreen> {
   final List<Map<String, String>> estudiantes = [
     {'nombre': 'Juan Pérez', 'foto': 'assets/profile_picture.jpg', 'descripcion': 'Descripción de Juan Pérez'},
     {'nombre': 'María López', 'foto': 'assets/profile_picture.jpg', 'descripcion': 'Descripción de María López'},
