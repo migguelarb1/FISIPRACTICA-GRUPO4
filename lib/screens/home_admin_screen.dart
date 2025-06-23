@@ -124,9 +124,10 @@ class HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          Footer(),
+          // Footer(),
         ],
       ),
+      bottomNavigationBar: Footer(),
     );
   }
 }
