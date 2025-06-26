@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../widgets/header.dart';
-import '../widgets/footer.dart';
-import 'estudiantes_screen.dart';
+import '../../shared/widgets/header.dart';
+import '../../shared/widgets/footer.dart';
+import '../../students/screens/estudiantes_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -124,10 +124,9 @@ class HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          // Footer(),
         ],
       ),
       bottomNavigationBar: Footer(),
     );
   }
-}
+} 

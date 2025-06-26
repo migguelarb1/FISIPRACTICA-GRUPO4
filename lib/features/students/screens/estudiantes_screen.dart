@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../widgets/header.dart';
-import '../widgets/footer.dart';
+import '../../shared/widgets/header.dart';
+import '../../shared/widgets/footer.dart';
 
 class EstudiantesScreen extends StatefulWidget {
   const EstudiantesScreen({super.key});
@@ -150,30 +150,30 @@ class EstudiantesScreenState extends State<EstudiantesScreen> {
   }
 
   void _showConfirmationDialog(Map<String, String> estudiante) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Confirmar eliminación'),
-        content: Text('¿Seguro de que deseas eliminar a ${estudiante['nombre']}?'),
-        actions: <Widget>[
-          TextButton(
-            child: Text('Cancelar'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          TextButton(
-            child: Text('Eliminar'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmar eliminación'),
+          content: Text('¿Seguro de que deseas eliminar a ${estudiante['nombre']}?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Eliminar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -248,15 +248,9 @@ class EstudiantesScreenState extends State<EstudiantesScreen> {
               ),
             ],
           ),
-          Footer(),
         ],
       ),
+      bottomNavigationBar: Footer(),
     );
   }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-}
+} 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/header.dart';
+import '../../shared/widgets/header.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -18,4 +18,4 @@ class LoginScreen extends StatelessWidget {
       ),
     );
   }
-}
+} 

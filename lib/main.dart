@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'screens/login_screen.dart';
+import 'app/core/core.dart';
+import 'features/auth/screens/login_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,11 +12,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'FISI Práctica - Grupo 4',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1E3984)),
+        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
         useMaterial3: true,
       ),
+      initialRoute: AppRoutes.login,
+      routes: AppRoutes.routes,
       home: const LoginScreen(),
     );
   }

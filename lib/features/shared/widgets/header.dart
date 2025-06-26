@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/login_form.dart';
+import '../../auth/widgets/login_form.dart';
 
 class Header extends StatelessWidget {
   const Header({super.key});
@@ -37,19 +37,6 @@ class Header extends StatelessWidget {
               ],
             ),
           ),
-          /*actions: <Widget>[
-            TextButton(
-              child: Text(
-                'Cerrar',
-                style: TextStyle(
-                  color: Color(0xFF1E3984),
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],*/
         );
       },
     );
@@ -93,4 +80,4 @@ class Header extends StatelessWidget {
       ),
     );
   }
-}
+} 

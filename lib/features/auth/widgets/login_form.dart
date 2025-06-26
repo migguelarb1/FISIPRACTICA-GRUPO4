@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../screens/home_admin_screen.dart';
+import '../../dashboard/screens/home_admin_screen.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -110,4 +110,4 @@ class LoginFormState extends State<LoginForm> {
       ),
     );
   }
-}
+} 
