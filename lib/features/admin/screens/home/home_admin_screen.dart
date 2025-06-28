@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../shared/widgets/header.dart';
-import '../../shared/widgets/footer.dart';
-import '../../students/screens/estudiantes_screen.dart';
+import 'package:flutter_app/features/features.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -31,7 +29,6 @@ class HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: Column(
         children: <Widget>[
-          Header(),
           Expanded(
             child: Center(
               child: Column(
@@ -126,7 +123,6 @@ class HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: Footer(),
     );
   }
-} 
+}

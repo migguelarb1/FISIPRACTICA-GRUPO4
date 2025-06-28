@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/features/auth/screens/login_screen.dart';
-import 'package:flutter_app/features/dashboard/screens/home_admin_screen.dart';
-import 'package:flutter_app/features/students/screens/estudiantes_screen.dart';
+import 'package:flutter_app/features/features.dart';
 
 class AppRoutes {
+  static const String splash = '/';
   static const String login = '/login';
-  static const String home = '/home';
-  static const String students = '/students';
+  static const String home = '/admin';
+  static const String students = '/admin/students';
 
   static Map<String, WidgetBuilder> routes = {
+    splash: (context) => const SplashScreen(),
     login: (context) => const LoginScreen(),
-    home: (context) => const HomeScreen(),
+    home: (context) => const MainAdmin(),
     students: (context) => const EstudiantesScreen(),
   };
 

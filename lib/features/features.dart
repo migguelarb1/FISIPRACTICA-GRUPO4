@@ -2,12 +2,12 @@
 export 'auth/screens/login_screen.dart';
 export 'auth/widgets/login_form.dart';
 
-// Dashboard Feature
-export 'dashboard/screens/home_admin_screen.dart';
-
-// Students Feature
-export 'students/screens/estudiantes_screen.dart';
+// Admin Feature
+export 'admin/screens/screens.dart';
+export 'admin/widgets/widgets.dart';
+export 'admin/main.dart';
 
 // Shared Components
 export 'shared/widgets/header.dart';
-export 'shared/widgets/footer.dart'; 
+export 'shared/widgets/footer.dart';
+export 'shared/screens/splash_screen.dart';

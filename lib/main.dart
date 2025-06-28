@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'app/core/core.dart';
-import 'features/auth/screens/login_screen.dart';
+import 'features/features.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,9 +17,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
         useMaterial3: true,
       ),
-      initialRoute: AppRoutes.login,
+      initialRoute: AppRoutes.splash,
       routes: AppRoutes.routes,
-      home: const LoginScreen(),
     );
   }
 }
