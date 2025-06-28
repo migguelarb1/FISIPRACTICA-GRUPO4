@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import '../widgets/header.dart';
-import '../widgets/footer.dart';
-import 'estudiantes_screen.dart';
+import 'package:flutter_app/features/features.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> {
   int _selectedButtonIndex = -1;
 
   void _onButtonPressed(int index) {
@@ -31,7 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: Column(
         children: <Widget>[
-          Header(),
           Expanded(
             child: Center(
               child: Column(
@@ -124,7 +121,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          Footer(),
         ],
       ),
     );

@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
-import '../screens/home_admin_screen.dart';
+import 'package:flutter_app/app/core/core.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
 
   @override
-  _LoginFormState createState() => _LoginFormState();
+  LoginFormState createState() => LoginFormState();
 }
 
-class _LoginFormState extends State<LoginForm> {
+class LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
   String _email = '';
   String _password = '';
 
-  void _submit() {
+  void _submit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      print('Email: $_email, Password: $_password');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
+      
+      // Guardar el estado de login
+      await AuthService.login(userType: 'admin');
+      
+      // Navegar al home screen
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, AppRoutes.home);
+      }
     }
   }
 
@@ -110,4 +113,4 @@ class _LoginFormState extends State<LoginForm> {
       ),
     );
   }
-}
+} 
