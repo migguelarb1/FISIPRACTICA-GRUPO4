@@ -16,13 +16,13 @@ class LoginFormState extends State<LoginForm> {
   void _submit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      
+
       // Guardar el estado de login
       await AuthService.login(userType: 'admin');
-      
+
       // Navegar al home screen
       if (mounted) {
-        Navigator.pushReplacementNamed(context, AppRoutes.home);
+        Navigator.pushReplacementNamed(context, AppRoutes.admin);
       }
     }
   }
@@ -113,4 +113,4 @@ class LoginFormState extends State<LoginForm> {
       ),
     );
   }
-} 
+}

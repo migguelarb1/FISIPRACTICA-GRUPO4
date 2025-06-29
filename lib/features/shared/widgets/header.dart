@@ -5,12 +5,11 @@ import 'package:flutter_app/app/core/core.dart';
 class Header extends StatelessWidget {
   final bool isHome;
   final bool allowedAdminLogin;
-  final VoidCallback? onBackPressed;
+
   const Header({
-    super.key, 
-    this.isHome = false, 
+    super.key,
+    this.isHome = false,
     this.allowedAdminLogin = false,
-    this.onBackPressed,
   });
 
   Future<void> _logout() async {
@@ -92,43 +91,6 @@ class Header extends StatelessWidget {
         });
   }
 
-  /* void _showLoginDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0),
-          ),
-          content: SizedBox(
-            width: 321,
-            height: 387,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircleAvatar(
-                  radius: 40,
-                  backgroundImage: AssetImage('assets/profile_picture.jpg'),
-                ),
-                SizedBox(height: 20),
-                Text(
-                  'Admin Admin',
-                  style: TextStyle(
-                    color: Color(0xFF1E3984),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 23.0,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 20),
-                Expanded(child: AdminLoginForm()),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  } */
   void _showLoginDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -183,15 +145,19 @@ class Header extends StatelessWidget {
             ),
           ],
           leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Color(0xFF1E3984),
-              size: 40.0,
-            ),
+            icon: !isHome
+                ? Icon(
+                    Icons.arrow_back,
+                    color: Color(0xFF1E3984),
+                    size: 40.0,
+                  )
+                : Icon(
+                    Icons.logout,
+                    color: Color(0xFF1E3984),
+                    size: 40.0,
+                  ),
             onPressed: () {
-              if (onBackPressed != null) {
-                onBackPressed!();
-              } else if (!isHome) {
+              if (!isHome) {
                 Navigator.pop(context);
               } else {
                 _showLogoutDialog(context);

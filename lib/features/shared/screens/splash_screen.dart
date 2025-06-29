@@ -22,14 +22,14 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _checkAuthAndNavigate() async {
     // Esperar un momento para mostrar el logo
     await Future.delayed(const Duration(seconds: 2));
-    
+
     // Verificar si el usuario está logueado
     bool isLoggedIn = await AuthService.isLoggedIn();
-    
+
     if (mounted) {
       if (isLoggedIn) {
         // Si está logueado, ir directamente al admin home
-        Navigator.pushReplacementNamed(context, AppRoutes.home);
+        Navigator.pushReplacementNamed(context, AppRoutes.admin);
       } else {
         // Si no está logueado, esperar 3 segundos más y mostrar el botón
         await Future.delayed(const Duration(seconds: 3));
