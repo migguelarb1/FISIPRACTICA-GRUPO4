@@ -8,13 +8,23 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true, 
-      body: SingleChildScrollView(  
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60.0),
+        child: Column(
+          children: [
+            Header(
+              isHome: false,
+              allowedAdminLogin: true,
+            )
+          ],
+        ),
+      ),
+      resizeToAvoidBottomInset: true,
+      body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            const Header(allowedAdminLogin: true,),
             SizedBox(height: 20),
-            LoginForm(1),  // El formulario de login
+            LoginForm(1), // El formulario de login
             SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.all(20.0),

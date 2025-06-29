@@ -8,11 +8,21 @@ class LoginReclutadorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60.0),
+        child: Column(
+          children: [
+            Header(
+              isHome: false,
+              allowedAdminLogin: true,
+            )
+          ],
+        ),
+      ),
       resizeToAvoidBottomInset: true, 
       body: SingleChildScrollView(  
         child: Column(
           children: <Widget>[
-            const Header(allowedAdminLogin: true,),
             SizedBox(height: 20),
             LoginForm(0),  // El formulario de login
             SizedBox(height: 20),
