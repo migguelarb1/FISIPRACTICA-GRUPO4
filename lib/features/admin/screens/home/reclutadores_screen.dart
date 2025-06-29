@@ -122,15 +122,28 @@ class ReclutadoresScreenState extends State<ReclutadoresScreen> {
     return Scaffold(
       body: Column(
         children: <Widget>[
-          Padding(
+          Container(
             padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Reclutadores', // Título de la pantalla
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1E3984),
-              ),
+            decoration: BoxDecoration(
+              color: Color(0xFF1E3984).withOpacity(0.1),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.people, color: Color(0xFF1E3984), size: 30),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Lista de Reclutadores',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E3984),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(

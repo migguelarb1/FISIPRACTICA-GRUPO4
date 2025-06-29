@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/features/features.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final Function(String)? onNavigateToSubpage;
+  
+  const HomeScreen({super.key, this.onNavigateToSubpage});
 
   @override
   HomeScreenState createState() => HomeScreenState();
@@ -17,10 +18,14 @@ class HomeScreenState extends State<HomeScreen> {
     });
 
     if (index == 0) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => EstudiantesScreen()),
-      );
+      // Navegar a EstudiantesScreen
+      widget.onNavigateToSubpage?.call('estudiantes');
+    } else if (index == 1) {
+      // Navegar a ReclutadoresScreen
+      widget.onNavigateToSubpage?.call('reclutadores');
+    } else if (index == 2) {
+      // Navegar a EmpresasScreen
+      widget.onNavigateToSubpage?.call('empresas');
     }
   }
 

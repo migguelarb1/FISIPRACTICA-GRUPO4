@@ -181,9 +181,9 @@ class ReclutadorCard extends StatelessWidget {
               leading: Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: CircleAvatar(
-                    backgroundImage: reclutador['foto'] != null
+                    backgroundImage: /* reclutador['foto'] != null
                         ? MemoryImage(reclutador['foto'] as Uint8List)
-                        : const AssetImage('assets/profile_picture.png')
+                        :  */const AssetImage('assets/profile_picture.png')
                             as ImageProvider),
               ),
               title: Column(

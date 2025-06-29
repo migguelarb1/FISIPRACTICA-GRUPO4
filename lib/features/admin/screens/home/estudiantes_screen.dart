@@ -216,87 +216,114 @@ class EstudiantesScreenState extends State<EstudiantesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    int startIndex = (_currentPage - 1) * _itemsPerPage;
-    int endIndex = startIndex + _itemsPerPage;
-    List<Map<String, String>> currentEstudiantes = estudiantes.sublist(
+    final startIndex = (_currentPage - 1) * _itemsPerPage;
+    final endIndex = startIndex + _itemsPerPage;
+    final currentEstudiantes = estudiantes.sublist(
       startIndex,
       endIndex > estudiantes.length ? estudiantes.length : endIndex,
     );
-
-    int totalPages = (estudiantes.length / _itemsPerPage).ceil();
+    final totalPages = (estudiantes.length / _itemsPerPage).ceil();
 
     return Scaffold(
       body: Column(
         children: <Widget>[
-          Padding(
+          Container(
             padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Estudiantes', // Título de la pantalla
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1E3984),
-              ),
+            decoration: BoxDecoration(
+              color: Color(0xFF1E3984).withOpacity(0.1),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.school, color: Color(0xFF1E3984), size: 30),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Lista de Estudiantes',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E3984),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              itemCount: currentEstudiantes.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  margin: EdgeInsets.all(10.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  color: Color(0xFFDBE2F6),
-                  elevation: 5,
-                  child: InkWell(
-                    onTap: () => _showStudentDialog(currentEstudiantes[index]),
-                    child: SizedBox(
-                      height: 100,
-                      child: Center(
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundImage:
-                                AssetImage(currentEstudiantes[index]['foto']!),
-                          ),
-                          title: Text(
-                            currentEstudiantes[index]['nombre']!,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Color(0xFF1E3984),
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    itemCount: currentEstudiantes.length,
+                    itemBuilder: (context, index) {
+                      final estudiante = currentEstudiantes[index];
+                      return Container(
+                        margin: EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 1,
+                              blurRadius: 3,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: InkWell(
+                          onTap: () => _showStudentDialog(estudiante),
+                          child: SizedBox(
+                            height: 100,
+                            child: Center(
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  backgroundImage:
+                                      AssetImage(estudiante['foto']!),
+                                ),
+                                title: Text(
+                                  estudiante['nombre']!,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Color(0xFF1E3984),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
+                      );
+                    },
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    IconButton(
+                      icon: Icon(Icons.arrow_back),
+                      onPressed: _previousPage,
+                    ),
+                    Expanded(
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 4.0,
+                        runSpacing: 4.0,
+                        children: _buildPageNumbers(totalPages),
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: _previousPage,
-              ),
-              Expanded(
-                child: Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 4.0,
-                  runSpacing: 4.0,
-                  children: _buildPageNumbers(totalPages),
+                    IconButton(
+                      icon: Icon(Icons.arrow_forward),
+                      onPressed: _nextPage,
+                    ),
+                  ],
                 ),
-              ),
-              IconButton(
-                icon: Icon(Icons.arrow_forward),
-                onPressed: _nextPage,
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

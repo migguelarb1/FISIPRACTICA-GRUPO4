@@ -5,8 +5,13 @@ import 'package:flutter_app/app/core/core.dart';
 class Header extends StatelessWidget {
   final bool isHome;
   final bool allowedAdminLogin;
-  const Header(
-      {super.key, this.isHome = false, this.allowedAdminLogin = false});
+  final VoidCallback? onBackPressed;
+  const Header({
+    super.key, 
+    this.isHome = false, 
+    this.allowedAdminLogin = false,
+    this.onBackPressed,
+  });
 
   Future<void> _logout() async {
     try {
@@ -184,7 +189,9 @@ class Header extends StatelessWidget {
               size: 40.0,
             ),
             onPressed: () {
-              if (!isHome) {
+              if (onBackPressed != null) {
+                onBackPressed!();
+              } else if (!isHome) {
                 Navigator.pop(context);
               } else {
                 _showLogoutDialog(context);
