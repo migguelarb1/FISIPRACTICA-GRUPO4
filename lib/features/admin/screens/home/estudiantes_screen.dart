@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/features/features.dart';
 
 class EstudiantesScreen extends StatefulWidget {
   const EstudiantesScreen({super.key});
@@ -225,12 +226,22 @@ class EstudiantesScreenState extends State<EstudiantesScreen> {
     final totalPages = (estudiantes.length / _itemsPerPage).ceil();
 
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60.0),
+        child: Column(
+          children: [
+            Header(
+              isHome: false,
+            )
+          ],
+        ),
+      ),
       body: Column(
         children: <Widget>[
           Container(
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              color: Color(0xFF1E3984).withOpacity(0.1),
+              color: Color(0xFF1E3984).withValues(alpha: 0.1),
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
             ),
             child: Row(

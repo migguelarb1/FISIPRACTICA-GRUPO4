@@ -120,12 +120,22 @@ class ReclutadoresScreenState extends State<ReclutadoresScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60.0),
+        child: Column(
+          children: [
+            Header(
+              isHome: false,
+            )
+          ],
+        ),
+      ),
       body: Column(
         children: <Widget>[
           Container(
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              color: Color(0xFF1E3984).withOpacity(0.1),
+              color: Color(0xFF1E3984).withValues(alpha: 0.1),
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
             ),
             child: Row(
