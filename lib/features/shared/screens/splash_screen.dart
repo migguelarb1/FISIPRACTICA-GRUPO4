@@ -1,8 +1,6 @@
 //Pantalla de bienvenida
 import 'package:flutter/material.dart';
-//import 'package:flutter_app/features/features.dart';
 import 'package:flutter_app/app/core/core.dart';
-import 'package:flutter_app/features/shared/screens/pick_user_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -60,11 +58,7 @@ class _SplashScreenState extends State<SplashScreen> {
             _showButton
                 ? ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const PickUserScreen()),
-                      );
+                      Navigator.pushNamed(context, AppRoutes.lobby);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF1E1D94),
