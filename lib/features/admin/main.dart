@@ -85,25 +85,32 @@ class _MainAdminState extends State<MainAdmin> {
                 children: pages,
               ),
             ),
-            bottomNavigationBar: NavigationBar(
-                selectedIndex: currentIndex,
-                onDestinationSelected: goToPage,
-                indicatorColor: AppColors.secondary,
-                destinations: const [
-                  NavigationDestination(
-                      icon: Icon(
-                        Icons.home_outlined,
-                      ),
-                      selectedIcon: Icon(Icons.home),
-                      label: 'Inicio'),
-                  NavigationDestination(
-                      icon: Icon(Icons.work_outline),
-                      selectedIcon: Icon(Icons.work),
-                      label: 'Ofertas'),
-                  NavigationDestination(
-                      icon: Icon(Icons.person_outline),
-                      selectedIcon: Icon(Icons.person),
-                      label: 'Perfil'),
-                ])));
+            bottomNavigationBar: NavigationBarTheme(
+                data: NavigationBarThemeData(
+                    indicatorColor: AppColors.secondary,
+                    backgroundColor: AppColors.primary,
+                    labelTextStyle: WidgetStateProperty.all(
+                        TextStyle(color: Colors.white))),
+                child: NavigationBar(
+                    selectedIndex: currentIndex,
+                    onDestinationSelected: goToPage,
+                    indicatorColor: AppColors.secondary,
+                    destinations: const [
+                      NavigationDestination(
+                          icon: Icon(
+                            Icons.home_outlined,
+                            color: Colors.white,
+                          ),
+                          selectedIcon: Icon(Icons.home),
+                          label: 'Inicio'),
+                      NavigationDestination(
+                          icon: Icon(Icons.work_outline, color: Colors.white),
+                          selectedIcon: Icon(Icons.work),
+                          label: 'Ofertas'),
+                      NavigationDestination(
+                          icon: Icon(Icons.person_outline, color: Colors.white),
+                          selectedIcon: Icon(Icons.person),
+                          label: 'Perfil'),
+                    ]))));
   }
 }
