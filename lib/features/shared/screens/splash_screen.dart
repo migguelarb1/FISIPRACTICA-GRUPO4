@@ -1,8 +1,7 @@
 //Pantalla de bienvenida
 import 'package:flutter/material.dart';
-//import 'package:flutter_app/features/features.dart';
-import 'package:flutter_app/app/core/core.dart';
-import 'package:flutter_app/features/shared/screens/pick_user_screen.dart';
+import 'package:flutter_app/core/core.dart';
+import 'package:flutter_app/features/auth/services/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -23,14 +22,14 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _checkAuthAndNavigate() async {
     // Esperar un momento para mostrar el logo
     await Future.delayed(const Duration(seconds: 2));
-    
+
     // Verificar si el usuario está logueado
     bool isLoggedIn = await AuthService.isLoggedIn();
-    
+
     if (mounted) {
       if (isLoggedIn) {
         // Si está logueado, ir directamente al admin home
-        Navigator.pushReplacementNamed(context, AppRoutes.home);
+        Navigator.pushReplacementNamed(context, AppRoutes.admin);
       } else {
         // Si no está logueado, esperar 3 segundos más y mostrar el botón
         await Future.delayed(const Duration(seconds: 3));
@@ -60,11 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
             _showButton
                 ? ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const PickUserScreen()),
-                      );
+                      Navigator.pushNamed(context, AppRoutes.lobby);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF1E1D94),

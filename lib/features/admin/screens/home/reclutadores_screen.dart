@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/features/features.dart';
+import 'package:flutter_app/features/admin/widgets/widgets.dart';
+import 'package:flutter_app/features/shared/widgets/header.dart';
 
 class ReclutadoresScreen extends StatefulWidget {
   const ReclutadoresScreen({super.key});
@@ -120,17 +121,40 @@ class ReclutadoresScreenState extends State<ReclutadoresScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60.0),
+        child: Column(
+          children: [
+            Header(
+              isHome: false,
+            )
+          ],
+        ),
+      ),
       body: Column(
         children: <Widget>[
-          Padding(
+          Container(
             padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Reclutadores', // Título de la pantalla
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1E3984),
-              ),
+            decoration: BoxDecoration(
+              color: Color(0xFF1E3984).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.people, color: Color(0xFF1E3984), size: 30),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Lista de Reclutadores',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E3984),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(

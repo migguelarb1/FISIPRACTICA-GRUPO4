@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 
 class ReclutadorCard extends StatelessWidget {
@@ -8,7 +6,8 @@ class ReclutadorCard extends StatelessWidget {
   final Map<String, String> reclutador;
   final int index;
 
-  void _showConfirmationDialog(Map<String, dynamic> reclutador, BuildContext context) {
+  void _showConfirmationDialog(
+      Map<String, dynamic> reclutador, BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -57,9 +56,11 @@ class ReclutadorCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 40,
-                  backgroundImage: reclutador['foto'] != null
+                  backgroundImage: /* reclutador['foto'] != null
                       ? MemoryImage(reclutador['foto'] as Uint8List)
-                      : const AssetImage('assets/profile_picture.png') as ImageProvider,
+                      : */
+                      const AssetImage('assets/profile_picture.png')
+                          as ImageProvider,
                 ),
                 SizedBox(height: 10),
                 Text(
@@ -181,9 +182,10 @@ class ReclutadorCard extends StatelessWidget {
               leading: Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: CircleAvatar(
-                    backgroundImage: reclutador['foto'] != null
+                    backgroundImage: /* reclutador['foto'] != null
                         ? MemoryImage(reclutador['foto'] as Uint8List)
-                        : const AssetImage('assets/profile_picture.png')
+                        :  */
+                        const AssetImage('assets/profile_picture.png')
                             as ImageProvider),
               ),
               title: Column(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/features/features.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_app/core/core.dart';
+import 'package:flutter_app/features/admin/navigation/navigation.dart';
 
 class MainAdmin extends StatefulWidget {
   const MainAdmin({super.key});
@@ -10,60 +12,105 @@ class MainAdmin extends StatefulWidget {
 
 class _MainAdminState extends State<MainAdmin> {
   int currentIndex = 0;
+
   void goToPage(int index) {
     setState(() {
       currentIndex = index;
     });
   }
 
-  final List<Widget> _pages = [
-    HomeScreen(),
+  final List<GlobalKey<NavigatorState>> _navigatorKeys = [
+    homeNavigatorKey,
   ];
+
+  Future<void> _systemBackButtonPressed(result) async {
+    if (_navigatorKeys[currentIndex].currentState?.canPop() ?? true) {
+      _navigatorKeys[currentIndex].currentState?.pop(result);
+    } else {
+      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100.0),
+    final List<Widget> pages = [
+      HomeNav(),
+      Center(
         child: Column(
-          children: const [Header(isHome: true)],
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.work, size: 100, color: Color(0xFF1E3984)),
+            SizedBox(height: 20),
+            Text(
+              'Ofertas',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1E3984),
+              ),
+            ),
+          ],
         ),
       ),
-      body: IndexedStack(
-        index: currentIndex,
-        children: _pages,
+      Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.person, size: 100, color: Color(0xFF1E3984)),
+            SizedBox(height: 20),
+            Text(
+              'Perfil',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1E3984),
+              ),
+            ),
+          ],
+        ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        elevation: 0,
-        backgroundColor: Color(0xFF1E3984),
-        items: [
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/home_icon.png',
-              color: currentIndex == 0 ? Colors.white : Colors.grey,
+    ];
+
+    return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
+          if (!didPop) {
+            await _systemBackButtonPressed(result);
+          }
+        },
+        child: Scaffold(
+            body: SafeArea(
+              child: IndexedStack(
+                index: currentIndex,
+                children: pages,
+              ),
             ),
-            label: 'Inicio',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/portfolio_icon.png',
-              color: currentIndex == 1 ? Colors.white : Colors.grey,
-            ),
-            label: 'Ofertas',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/user_icon.png',
-              color: currentIndex == 3 ? Colors.white : Colors.grey,
-            ),
-            label: 'Perfil',
-          )
-        ],
-        currentIndex: currentIndex,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
-        onTap: goToPage,
-      ),
-    );
+            bottomNavigationBar: NavigationBarTheme(
+                data: NavigationBarThemeData(
+                    indicatorColor: AppColors.secondary,
+                    backgroundColor: AppColors.primary,
+                    labelTextStyle: WidgetStateProperty.all(
+                        TextStyle(color: Colors.white))),
+                child: NavigationBar(
+                    selectedIndex: currentIndex,
+                    onDestinationSelected: goToPage,
+                    indicatorColor: AppColors.secondary,
+                    destinations: const [
+                      NavigationDestination(
+                          icon: Icon(
+                            Icons.home_outlined,
+                            color: Colors.white,
+                          ),
+                          selectedIcon: Icon(Icons.home),
+                          label: 'Inicio'),
+                      NavigationDestination(
+                          icon: Icon(Icons.work_outline, color: Colors.white),
+                          selectedIcon: Icon(Icons.work),
+                          label: 'Ofertas'),
+                      NavigationDestination(
+                          icon: Icon(Icons.person_outline, color: Colors.white),
+                          selectedIcon: Icon(Icons.person),
+                          label: 'Perfil'),
+                    ]))));
   }
 }

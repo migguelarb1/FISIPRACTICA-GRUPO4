@@ -1,127 +1,204 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/features/features.dart';
+import 'package:flutter_app/core/core.dart';
+import 'package:flutter_app/features/shared/widgets/header.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final Function(String)? onNavigateToSubpage;
+
+  const HomeScreen({super.key, this.onNavigateToSubpage});
 
   @override
   HomeScreenState createState() => HomeScreenState();
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  int _selectedButtonIndex = -1;
-
   void _onButtonPressed(int index) {
-    setState(() {
-      _selectedButtonIndex = index;
-    });
-
     if (index == 0) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => EstudiantesScreen()),
-      );
+      // Navegar a EstudiantesScreen
+      Navigator.pushNamed(context, AppRoutes.students);
+      // widget.onNavigateToSubpage?.call('estudiantes');
+    } else if (index == 1) {
+      // Navegar a ReclutadoresScreen
+      Navigator.pushNamed(context, AppRoutes.recruiters);
+      // widget.onNavigateToSubpage?.call('reclutadores');
+    } else if (index == 2) {
+      // Navegar a EmpresasScreen
+      Navigator.pushNamed(context, AppRoutes.companies);
+      // widget.onNavigateToSubpage?.call('empresas');
     }
   }
 
+  /* Map<String, dynamic> buttons = {
+    'estudiantes': {
+      'label': 'Estudiantes',
+      'icon': Icons.school,
+      'route': AppRoutes.students,
+    },
+    'reclutadores': {
+      'label': 'Reclutadores',
+      'icon': Icons.business_center,
+      'route': AppRoutes.recruiters,
+    },
+    'empresas': {
+      'label': 'Empresas',
+      'icon': Icons.apartment,
+      'route': AppRoutes.companies,
+    },
+  }; */
+
   @override
   Widget build(BuildContext context) {
+    /* List<Widget> buttonWidgets = buttons.values.map((value) {
+      return SizedBox(
+        width: 363,
+        height: 79,
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.pushNamed(context, value['route']);
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Color(0xFFF5F5F5),
+            textStyle: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            shadowColor: Colors.black.withAlpha(128),
+            elevation: 10,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(value['icon'], size: 32),
+              SizedBox(width: 10),
+              Text(value['label']),
+            ],
+          ),
+        ),
+      );
+    }).toList(); */
+
     return Scaffold(
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(
-                    width: 363,
-                    height: 79,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _onButtonPressed(0);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _selectedButtonIndex == 0
-                            ? Color(0xFF1E3984)
-                            : Color(0xFFD5D5D5),
-                        foregroundColor: _selectedButtonIndex == 0
-                            ? Color(0xFFF5F5F5)
-                            : Colors.white,
-                        textStyle: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60.0),
+        child: Column(
+          children: [
+            Header(
+              isHome: true,
+            )
+          ],
+        ),
+      ),
+      body: SizedBox.expand(
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  // children: buttonWidgets,
+                  children: <Widget>[
+                    SizedBox(
+                      width: 363,
+                      height: 79,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _onButtonPressed(0);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Color(0xFFF5F5F5),
+                          textStyle: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          shadowColor: Colors.black.withAlpha(128),
+                          elevation: 10,
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.school, size: 32),
+                            SizedBox(width: 10),
+                            Text('Estudiantes'),
+                          ],
                         ),
-                        shadowColor: Colors.black.withAlpha(128),
-                        elevation: 10,
                       ),
-                      child: Text('Estudiantes'),
                     ),
-                  ),
-                  SizedBox(height: 25),
-                  SizedBox(
-                    width: 363,
-                    height: 79,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _onButtonPressed(1);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _selectedButtonIndex == 1
-                            ? Color(0xFF1E3984)
-                            : Color(0xFFD5D5D5),
-                        foregroundColor: _selectedButtonIndex == 1
-                            ? Color(0xFFF5F5F5)
-                            : Colors.white,
-                        textStyle: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
+                    SizedBox(height: 25),
+                    SizedBox(
+                      width: 363,
+                      height: 79,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _onButtonPressed(1);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Color(0xFFF5F5F5),
+                          textStyle: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          shadowColor: Colors.black.withAlpha(128),
+                          elevation: 10,
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.business_center, size: 32),
+                            SizedBox(width: 10),
+                            Text('Reclutadores'),
+                          ],
                         ),
-                        shadowColor: Colors.black.withAlpha(128),
-                        elevation: 10,
                       ),
-                      child: Text('Reclutadores'),
                     ),
-                  ),
-                  SizedBox(height: 25),
-                  SizedBox(
-                    width: 363,
-                    height: 79,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _onButtonPressed(2);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _selectedButtonIndex == 2
-                            ? Color(0xFF1E3984)
-                            : Color(0xFFD5D5D5),
-                        foregroundColor: _selectedButtonIndex == 2
-                            ? Color(0xFFF5F5F5)
-                            : Colors.white,
-                        textStyle: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
+                    SizedBox(height: 25),
+                    SizedBox(
+                      width: 363,
+                      height: 79,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _onButtonPressed(2);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Color(0xFFF5F5F5),
+                          textStyle: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          shadowColor: Colors.black.withAlpha(128),
+                          elevation: 10,
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.apartment, size: 32),
+                            SizedBox(width: 10),
+                            Text('Empresas'),
+                          ],
                         ),
-                        shadowColor: Colors.black.withAlpha(128),
-                        elevation: 10,
                       ),
-                      child: Text('Empresas'),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

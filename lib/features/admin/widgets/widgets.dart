@@ -1,1 +1,1 @@
-export 'cards/reclutador_card.dart';
+export 'reclutador_card.dart';

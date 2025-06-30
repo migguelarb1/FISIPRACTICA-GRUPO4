@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/features/features.dart';
-import 'package:flutter_app/app/core/core.dart';
+import 'package:flutter_app/core/core.dart';
+import 'package:flutter_app/features/auth/services/auth_service.dart';
+import 'package:flutter_app/features/auth/widgets/login_admin_form.dart';
 
 class Header extends StatelessWidget {
   final bool isHome;
   final bool allowedAdminLogin;
-  const Header(
-      {super.key, this.isHome = false, this.allowedAdminLogin = false});
+
+  const Header({
+    super.key,
+    this.isHome = false,
+    this.allowedAdminLogin = false,
+  });
 
   Future<void> _logout() async {
     try {
@@ -87,43 +92,6 @@ class Header extends StatelessWidget {
         });
   }
 
-  /* void _showLoginDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0),
-          ),
-          content: SizedBox(
-            width: 321,
-            height: 387,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircleAvatar(
-                  radius: 40,
-                  backgroundImage: AssetImage('assets/profile_picture.jpg'),
-                ),
-                SizedBox(height: 20),
-                Text(
-                  'Admin Admin',
-                  style: TextStyle(
-                    color: Color(0xFF1E3984),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 23.0,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 20),
-                Expanded(child: AdminLoginForm()),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  } */
   void _showLoginDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -153,7 +121,7 @@ class Header extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 20),
-                Expanded(child: LoginForm()),
+                Expanded(child: LoginAdminForm()),
               ],
             ),
           ),
@@ -178,11 +146,17 @@ class Header extends StatelessWidget {
             ),
           ],
           leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Color(0xFF1E3984),
-              size: 40.0,
-            ),
+            icon: !isHome
+                ? Icon(
+                    Icons.arrow_back,
+                    color: Color(0xFF1E3984),
+                    size: 40.0,
+                  )
+                : Icon(
+                    Icons.logout,
+                    color: Color(0xFF1E3984),
+                    size: 40.0,
+                  ),
             onPressed: () {
               if (!isHome) {
                 Navigator.pop(context);
