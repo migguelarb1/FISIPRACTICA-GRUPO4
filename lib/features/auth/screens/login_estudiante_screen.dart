@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../widgets/header.dart';
-import '../widgets/login_form.dart';
+import 'package:flutter_app/features/auth/widgets/login_form.dart';
+import 'package:flutter_app/features/shared/widgets/header.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class LoginEstudianteScreen extends StatelessWidget {
+  const LoginEstudianteScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/app/routes/routes.dart';
-import 'package:flutter_app/features/features.dart';
+import 'package:flutter_app/core/routes/routes.dart';
 
 class HomeNav extends StatefulWidget {
   const HomeNav({super.key});

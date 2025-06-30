@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../shared/widgets/header.dart';
+import 'package:flutter_app/features/shared/widgets/header.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});

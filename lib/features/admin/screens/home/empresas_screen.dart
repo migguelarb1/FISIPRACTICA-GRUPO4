@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/features/features.dart';
+import 'package:flutter_app/features/shared/widgets/header.dart';
 
 class EmpresasScreen extends StatefulWidget {
   const EmpresasScreen({super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_app/app/constants/constants.dart';
-import 'package:flutter_app/features/admin/navigation/home_nav.dart';
+import 'package:flutter_app/core/core.dart';
+import 'package:flutter_app/features/admin/navigation/navigation.dart';
 
 class MainAdmin extends StatefulWidget {
   const MainAdmin({super.key});

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/app/core/core.dart';
-import 'package:flutter_app/app/routes/routes.dart';
-import 'package:flutter_app/features/features.dart';
+import 'package:flutter_app/core/core.dart';
+import 'package:flutter_app/features/shared/widgets/header.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function(String)? onNavigateToSubpage;

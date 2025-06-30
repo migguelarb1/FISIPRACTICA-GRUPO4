@@ -1,6 +1,7 @@
 //Pantalla de bienvenida
 import 'package:flutter/material.dart';
-import 'package:flutter_app/app/core/core.dart';
+import 'package:flutter_app/core/core.dart';
+import 'package:flutter_app/features/auth/services/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

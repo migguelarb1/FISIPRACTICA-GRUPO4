@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/features/features.dart';
+import 'package:flutter_app/features/admin/widgets/widgets.dart';
+import 'package:flutter_app/features/shared/widgets/header.dart';
 
 class ReclutadoresScreen extends StatefulWidget {
   const ReclutadoresScreen({super.key});

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/features/features.dart';
+import 'package:flutter_app/features/admin/main.dart';
+import 'package:flutter_app/features/admin/screens/screens.dart';
+import 'package:flutter_app/features/auth/screens/screens.dart';
+import 'package:flutter_app/features/shared/screens/screens.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -13,7 +16,7 @@ class AppRoutes {
 
   static Map<String, WidgetBuilder> routes = {
     splash: (context) => const SplashScreen(),
-    lobby: (context) => const PickUserScreen(), 
+    lobby: (context) => const PickUserScreen(),
     login: (context) => const LoginScreen(),
     admin: (context) => const MainAdmin(),
     adminHome: (context) => const HomeScreen(),

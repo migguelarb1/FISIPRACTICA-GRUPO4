@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/features/features.dart';
-import 'package:flutter_app/app/core/core.dart';
+import 'package:flutter_app/core/core.dart';
+import 'package:flutter_app/features/auth/services/auth_service.dart';
+import 'package:flutter_app/features/auth/widgets/login_admin_form.dart';
 
 class Header extends StatelessWidget {
   final bool isHome;
@@ -120,7 +121,7 @@ class Header extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 20),
-                Expanded(child: LoginForm()),
+                Expanded(child: LoginAdminForm()),
               ],
             ),
           ),

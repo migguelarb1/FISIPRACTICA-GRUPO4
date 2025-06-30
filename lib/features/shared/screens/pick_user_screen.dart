@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/features/shared/widgets/pick_user_card.dart';
-
-import '../widgets/header.dart';
-import 'login_reclutador_screen.dart';
-import 'login_screen.dart';
+import 'package:flutter_app/features/auth/screens/login_estudiante_screen.dart';
+import 'package:flutter_app/features/auth/screens/login_reclutador_screen.dart';
+import 'package:flutter_app/features/shared/widgets/widgets.dart';
 
 class PickUserScreen extends StatefulWidget {
   const PickUserScreen({super.key});
@@ -23,7 +21,8 @@ class _PickUserScreen extends State<PickUserScreen> {
     } else if (index == 1) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => LoginScreen()), //Estudiante
+        MaterialPageRoute(
+            builder: (context) => LoginEstudianteScreen()), //Estudiante
       );
     }
   }
