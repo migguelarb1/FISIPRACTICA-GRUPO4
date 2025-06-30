@@ -10,4 +10,5 @@ export 'admin/main.dart';
 // Shared Components
 export 'shared/widgets/header.dart';
 export 'shared/widgets/footer.dart';
+export 'shared/screens/pick_user_screen.dart';
 export 'shared/screens/splash_screen.dart';

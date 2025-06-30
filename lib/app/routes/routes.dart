@@ -3,6 +3,7 @@ import 'package:flutter_app/features/features.dart';
 
 class AppRoutes {
   static const String splash = '/';
+  static const String lobby = '/lobby';
   static const String login = '/login';
   static const String admin = '/admin';
   static const String adminHome = '/admin/home';
@@ -12,6 +13,7 @@ class AppRoutes {
 
   static Map<String, WidgetBuilder> routes = {
     splash: (context) => const SplashScreen(),
+    lobby: (context) => const PickUserScreen(), 
     login: (context) => const LoginScreen(),
     admin: (context) => const MainAdmin(),
     adminHome: (context) => const HomeScreen(),
