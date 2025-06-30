@@ -1,0 +1,1 @@
+export 'reclutador_card.dart';
