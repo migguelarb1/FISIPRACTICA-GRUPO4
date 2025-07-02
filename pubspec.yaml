@@ -2,7 +2,7 @@ name: flutter_app
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -36,15 +36,15 @@ dependencies:
   cupertino_icons: ^1.0.8
   shared_preferences: ^2.5.3
   dio: ^5.8.0+1
-  logger: ^2.5.0
+  logger: ^2.6.0
   flutter_dotenv: ^5.2.1
   flutter_session_manager: ^1.0.3
   jwt_decoder: ^2.0.1
-  file_picker: ^9.0.2
+  file_picker: ^10.2.0
   image_picker: ^1.1.2
   flutter_colorpicker: ^1.1.0
-  web_socket_channel: ^3.0.2
-  socket_io_client: ^3.0.2
+  web_socket_channel: ^3.0.3
+  socket_io_client: ^3.1.2
   grouped_list: ^6.0.0
   intl: ^0.20.2
 
