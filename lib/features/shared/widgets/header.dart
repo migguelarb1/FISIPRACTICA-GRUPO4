@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/core.dart';
 import 'package:flutter_app/features/auth/services/auth_service.dart';
-import 'package:flutter_app/features/auth/widgets/login_admin_form.dart';
+import 'package:flutter_app/features/auth/widgets/admin_login_form.dart';
 
 class Header extends StatelessWidget {
   final bool isHome;
