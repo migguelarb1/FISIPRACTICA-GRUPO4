@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/core/core.dart';
 import 'package:flutter_app/features/student/navigation/home_nav.dart';
-//import 'package:flutter_app/screens/HomeEstudianteScreen.dart';
-//import 'package:flutter_app/screens/chat_estudiante_screen.dart';
-//import 'package:flutter_app/screens/mis_postulaciones_screen.dart';
-//import 'package:flutter_app/screens/perfil_estudiante_screen.dart';
 
 class MainEstudiantes extends StatefulWidget {
   const MainEstudiantes({super.key});
