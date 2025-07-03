@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/core/core.dart';
+import 'package:flutter_app/features/recruiter/screens/home_reclutador_screen.dart';
 import 'package:flutter_app/features/shared/widgets/header.dart';
-//import 'package:flutter_app/screens/chat_reclutador_screen.dart';
-//import 'package:flutter_app/screens/home_reclutador_screen.dart';
-//import 'package:flutter_app/screens/ofertas_reclutador_screen.dart';
-//import 'package:flutter_app/services/reclutadores_services.dart';
-//import 'package:flutter_app/services/user_services.dart';
 
 class MainReclutadores extends StatefulWidget {
   const MainReclutadores({super.key});
@@ -15,6 +12,7 @@ class MainReclutadores extends StatefulWidget {
 
 class _MainReclutadoresState extends State<MainReclutadores> {
   int currentIndex = 0;
+
   void goToPage(int index) {
     setState(() {
       currentIndex = index;
@@ -24,6 +22,7 @@ class _MainReclutadoresState extends State<MainReclutadores> {
   late int recruiterId;
 
   final List<Widget> _pages = [
+    HomeReclutadorScreen(),
     //HomeReclutadorScreen(),
     //OfertasReclutadorScreen(),
     //ChatReclutadorScreen(),
@@ -31,7 +30,7 @@ class _MainReclutadoresState extends State<MainReclutadores> {
 
   @override
   void initState() {
-    super.initState();/* 
+    super.initState(); /* 
     _getRecruiterId(); */
   }
 
@@ -48,36 +47,65 @@ class _MainReclutadoresState extends State<MainReclutadores> {
         index: currentIndex,
         children: _pages,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        elevation: 0,
-        backgroundColor: Color(0xFF1E3984),
-        items: [
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/home_icon.png',
-              color: currentIndex == 0 ? Colors.white : Colors.grey,
-            ),
-            label: 'Inicio',
+      bottomNavigationBar: NavigationBarTheme(
+        data: NavigationBarThemeData(
+          indicatorColor: AppColors.secondary,
+          backgroundColor: AppColors.primary,
+          labelTextStyle: WidgetStateProperty.all(
+            TextStyle(color: Colors.white),
           ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/portfolio_icon.png',
-              color: currentIndex == 1 ? Colors.white : Colors.grey,
+        ),
+        child: NavigationBar(
+          selectedIndex: currentIndex,
+          onDestinationSelected: goToPage,
+          destinations: [
+            NavigationDestination(
+              icon: Image.asset(
+                'assets/home_icon.png',
+                color: Colors.white,
+                width: 24,
+                height: 24,
+              ),
+              selectedIcon: Image.asset(
+                'assets/home_icon.png',
+                color: AppColors.primary,
+                width: 24,
+                height: 24,
+              ),
+              label: 'Inicio',
             ),
-            label: 'Ofertas',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/chatbot_icon.png',
-              color: currentIndex == 2 ? Colors.white : Colors.grey,
+            NavigationDestination(
+              icon: Image.asset(
+                'assets/portfolio_icon.png',
+                color: Colors.white,
+                width: 24,
+                height: 24,
+              ),
+              selectedIcon: Image.asset(
+                'assets/portfolio_icon.png',
+                color: AppColors.primary,
+                width: 24,
+                height: 24,
+              ),
+              label: 'Ofertas',
             ),
-            label: 'Chat',
-          )
-        ],
-        currentIndex: currentIndex,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
-        onTap: goToPage,
+            NavigationDestination(
+              icon: Image.asset(
+                'assets/chatbot_icon.png',
+                color: Colors.white,
+                width: 24,
+                height: 24,
+              ),
+              selectedIcon: Image.asset(
+                'assets/chatbot_icon.png',
+                color: AppColors.primary,
+                width: 24,
+                height: 24,
+              ),
+              label: 'Chat',
+            ),
+          ],
+        ),
       ),
     );
   }

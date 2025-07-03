@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/features/admin/main.dart';
 import 'package:flutter_app/features/admin/screens/screens.dart';
 import 'package:flutter_app/features/auth/screens/screens.dart';
+import 'package:flutter_app/features/recruiter/main_reclutadores.dart';
 import 'package:flutter_app/features/shared/screens/screens.dart';
 import 'package:flutter_app/features/student/screens/home/detalle_oferta_estudiante.dart';
 import 'package:flutter_app/features/student/screens/home/home_estudiante_screen.dart';
@@ -22,6 +23,7 @@ class AppRoutes {
   static const String studentSettings = '/student/home/settings';
   static const String studentNotifications = '/student/home/notifications';
   static const String studentMessages = '/student/home/messages';
+  static const String recruiter = '/recruiter';
 
   static Map<String, WidgetBuilder> routes = {
     splash: (context) => const SplashScreen(),
@@ -34,6 +36,7 @@ class AppRoutes {
     companies: (context) => const EmpresasScreen(),
     studentOffers: (context) => const HomeEstudianteScreen(),
     studentOfferDetails: (context) => const DetalleOfertaEstudianteScreen(),
+    recruiter: (context) => const MainReclutadores(),
   };
 
   // Private constructor to prevent instantiation
