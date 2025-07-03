@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/features/shared/widgets/header.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_app/core/core.dart';
+import 'package:flutter_app/features/student/navigation/home_nav.dart';
 //import 'package:flutter_app/screens/HomeEstudianteScreen.dart';
 //import 'package:flutter_app/screens/chat_estudiante_screen.dart';
 //import 'package:flutter_app/screens/mis_postulaciones_screen.dart';
@@ -14,13 +16,27 @@ class MainEstudiantes extends StatefulWidget {
 
 class _MainEstudiantesState extends State<MainEstudiantes> {
   int currentIndex = 0;
+
   void goToPage(int index) {
     setState(() {
       currentIndex = index;
     });
   }
 
+  final List<GlobalKey<NavigatorState>> _navigatorKeys = [
+    homeEstudianteNavigatorKey,
+  ];
+
+  Future<void> _systemBackButtonPressed(result) async {
+    if (_navigatorKeys[currentIndex].currentState?.canPop() ?? true) {
+      _navigatorKeys[currentIndex].currentState?.pop(result);
+    } else {
+      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+    }
+  }
+
   final List<Widget> _pages = [
+    HomeEstudianteNav(),
     //HomeEstudianteScreen(),
     //MisPostulacionesScreen(),
     //ChatScreen(),
@@ -29,58 +45,141 @@ class _MainEstudiantesState extends State<MainEstudiantes> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60.0),
-        child: Container(
-          color: colors.surface,
-          child: const Header(isHome: true),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (!didPop) {
+          await _systemBackButtonPressed(result);
+        }
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: IndexedStack(
+            index: currentIndex,
+            children: _pages,
+          ),
         ),
-      ),
-      body: IndexedStack(
-        index: currentIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        elevation: 0,
-        backgroundColor: Color(0xFF1E3984),
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/home_icon.png',
-              color: currentIndex == 0 ? Colors.white : Colors.grey,
+        bottomNavigationBar: NavigationBarTheme(
+          data: NavigationBarThemeData(
+            indicatorColor: AppColors.secondary,
+            backgroundColor: AppColors.primary,
+            labelTextStyle: WidgetStateProperty.all(
+              TextStyle(color: Colors.white),
             ),
-            label: 'Inicio',
           ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/portfolio_icon.png',
-              color: currentIndex == 1 ? Colors.white : Colors.grey,
-            ),
-            label: 'Mis Postulaciones',
+          child: NavigationBar(
+            selectedIndex: currentIndex,
+            onDestinationSelected: goToPage,
+            destinations: [
+              NavigationDestination(
+                icon: Image.asset(
+                  'assets/home_icon.png',
+                  color: Colors.white,
+                  width: 24,
+                  height: 24,
+                ),
+                selectedIcon: Image.asset(
+                  'assets/home_icon.png',
+                  color: AppColors.primary,
+                  width: 24,
+                  height: 24,
+                ),
+                label: 'Inicio',
+              ),
+              NavigationDestination(
+                icon: Image.asset(
+                  'assets/portfolio_icon.png',
+                  color: Colors.white,
+                  width: 24,
+                  height: 24,
+                ),
+                selectedIcon: Image.asset(
+                  'assets/portfolio_icon.png',
+                  color: AppColors.primary,
+                  width: 24,
+                  height: 24,
+                ),
+                label: 'Ofertas',
+              ),
+              NavigationDestination(
+                icon: Image.asset(
+                  'assets/chatbot_icon.png',
+                  color: Colors.white,
+                  width: 24,
+                  height: 24,
+                ),
+                selectedIcon: Image.asset(
+                  'assets/chatbot_icon.png',
+                  color: AppColors.primary,
+                  width: 24,
+                  height: 24,
+                ),
+                label: 'Chat',
+              ),
+              NavigationDestination(
+                icon: Image.asset(
+                  'assets/user_icon.png',
+                  color: Colors.white,
+                  width: 24,
+                  height: 24,
+                ),
+                selectedIcon: Image.asset(
+                  'assets/user_icon.png',
+                  color: AppColors.primary,
+                  width: 24,
+                  height: 24,
+                ),
+                label: 'Perfil',
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/chatbot_icon.png',
-              color: currentIndex == 2 ? Colors.white : Colors.grey,
-            ),
-            label: 'Chat',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/user_icon.png',
-              color: currentIndex == 3 ? Colors.white : Colors.grey,
-            ),
-            label: 'Perfil',
-          ),
-        ],
-        currentIndex: currentIndex,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
-        onTap: goToPage,
+        ),
       ),
     );
   }
 }
+/* 
+        bottomNavigationBar: BottomNavigationBar(
+          elevation: 0,
+          backgroundColor: Color(0xFF1E3984),
+          type: BottomNavigationBarType.fixed,
+          items: [
+            BottomNavigationBarItem(
+              icon: Image.asset(
+                'assets/home_icon.png',
+                color: currentIndex == 0 ? Colors.white : Colors.grey,
+              ),
+              label: 'Inicio',
+            ),
+            BottomNavigationBarItem(
+              icon: Image.asset(
+                'assets/portfolio_icon.png',
+                color: currentIndex == 1 ? Colors.white : Colors.grey,
+              ),
+              label: 'Mis Postulaciones',
+            ),
+            BottomNavigationBarItem(
+              icon: Image.asset(
+                'assets/chatbot_icon.png',
+                color: currentIndex == 2 ? Colors.white : Colors.grey,
+              ),
+              label: 'Chat',
+            ),
+            BottomNavigationBarItem(
+              icon: Image.asset(
+                'assets/user_icon.png',
+                color: currentIndex == 3 ? Colors.white : Colors.grey,
+              ),
+              label: 'Perfil',
+            ),
+          ],
+          currentIndex: currentIndex,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.grey,
+          onTap: goToPage,
+        ),
+      ),
+    );
+  }
+}
+ */
