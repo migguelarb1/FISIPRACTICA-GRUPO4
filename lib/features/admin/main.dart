@@ -72,45 +72,49 @@ class _MainAdminState extends State<MainAdmin> {
     ];
 
     return PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, result) async {
-          if (!didPop) {
-            await _systemBackButtonPressed(result);
-          }
-        },
-        child: Scaffold(
-            body: SafeArea(
-              child: IndexedStack(
-                index: currentIndex,
-                children: pages,
-              ),
-            ),
-            bottomNavigationBar: NavigationBarTheme(
-                data: NavigationBarThemeData(
-                    indicatorColor: AppColors.secondary,
-                    backgroundColor: AppColors.primary,
-                    labelTextStyle: WidgetStateProperty.all(
-                        TextStyle(color: Colors.white))),
-                child: NavigationBar(
-                    selectedIndex: currentIndex,
-                    onDestinationSelected: goToPage,
-                    indicatorColor: AppColors.secondary,
-                    destinations: const [
-                      NavigationDestination(
-                          icon: Icon(
-                            Icons.home_outlined,
-                            color: Colors.white,
-                          ),
-                          selectedIcon: Icon(Icons.home),
-                          label: 'Inicio'),
-                      NavigationDestination(
-                          icon: Icon(Icons.work_outline, color: Colors.white),
-                          selectedIcon: Icon(Icons.work),
-                          label: 'Ofertas'),
-                      NavigationDestination(
-                          icon: Icon(Icons.person_outline, color: Colors.white),
-                          selectedIcon: Icon(Icons.person),
-                          label: 'Perfil'),
-                    ]))));
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (!didPop) {
+          await _systemBackButtonPressed(result);
+        }
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: IndexedStack(
+            index: currentIndex,
+            children: pages,
+          ),
+        ),
+        bottomNavigationBar: NavigationBarTheme(
+          data: NavigationBarThemeData(
+              indicatorColor: AppColors.secondary,
+              backgroundColor: AppColors.primary,
+              labelTextStyle:
+                  WidgetStateProperty.all(TextStyle(color: Colors.white))),
+          child: NavigationBar(
+            selectedIndex: currentIndex,
+            onDestinationSelected: goToPage,
+            indicatorColor: AppColors.secondary,
+            destinations: const [
+              NavigationDestination(
+                  icon: Icon(
+                    Icons.home_outlined,
+                    color: Colors.white,
+                  ),
+                  selectedIcon: Icon(Icons.home),
+                  label: 'Inicio'),
+              NavigationDestination(
+                  icon: Icon(Icons.work_outline, color: Colors.white),
+                  selectedIcon: Icon(Icons.work),
+                  label: 'Ofertas'),
+              NavigationDestination(
+                  icon: Icon(Icons.person_outline, color: Colors.white),
+                  selectedIcon: Icon(Icons.person),
+                  label: 'Perfil'),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
