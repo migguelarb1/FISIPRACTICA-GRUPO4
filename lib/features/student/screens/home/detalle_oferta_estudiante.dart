@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/features/shared/widgets/header.dart';
-import 'package:flutter_app/features/student/widgets/detalle_puesto.dart';
-import 'package:flutter_app/features/student/widgets/sobre_empresa.dart';
+import 'package:flutter_app/features/student/widgets/detalle_puesto_tab.dart';
+import 'package:flutter_app/features/student/widgets/sobre_empresa_tab.dart';
 
 class DetalleOfertaEstudianteScreen extends StatefulWidget {
   // final Map<String, dynamic>? oferta;
@@ -56,8 +56,8 @@ class _DetalleOfertaEstudianteScreenState
       body: TabBarView(
         controller: _tabController,
         children: [
-          DetallePuesto(oferta: oferta),
-          SobreEmpresa(oferta: oferta),
+          DetallePuestoTab(oferta: oferta),
+          SobreEmpresaTab(oferta: oferta),
         ],
       ),
     );

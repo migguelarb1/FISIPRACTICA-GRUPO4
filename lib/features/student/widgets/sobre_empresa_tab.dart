@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class SobreEmpresa extends StatelessWidget {
+class SobreEmpresaTab extends StatelessWidget {
   final Map<String, dynamic>? oferta;
-  const SobreEmpresa({super.key, this.oferta});
+  const SobreEmpresaTab({super.key, this.oferta});
 
   Widget _buildPostularButton(BuildContext context) {
     return Center(
