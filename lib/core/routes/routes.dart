@@ -4,6 +4,7 @@ import 'package:flutter_app/features/admin/screens/screens.dart';
 import 'package:flutter_app/features/auth/screens/screens.dart';
 import 'package:flutter_app/features/recruiter/main_reclutadores.dart';
 import 'package:flutter_app/features/shared/screens/screens.dart';
+import 'package:flutter_app/features/student/main_estudiantes.dart';
 import 'package:flutter_app/features/student/screens/home/detalle_oferta_estudiante.dart';
 import 'package:flutter_app/features/student/screens/home/home_estudiante_screen.dart';
 
@@ -34,6 +35,7 @@ class AppRoutes {
     students: (context) => const EstudiantesScreen(),
     recruiters: (context) => const ReclutadoresScreen(),
     companies: (context) => const EmpresasScreen(),
+    student: (context) => const MainEstudiantes(),
     studentOffers: (context) => const HomeEstudianteScreen(),
     studentOfferDetails: (context) => const DetalleOfertaEstudianteScreen(),
     recruiter: (context) => const MainReclutadores(),

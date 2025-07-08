@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/core/core.dart';
 import 'package:flutter_app/features/auth/services/user_services.dart';
-import 'package:flutter_app/features/recruiter/main_reclutadores.dart';
-import 'package:flutter_app/features/student/main_estudiantes.dart';
 
 class LoginForm extends StatefulWidget {
   final int index;
@@ -26,13 +25,9 @@ class _LoginFormState extends State<LoginForm> {
         UserServices.setToken(response['token']!);
         _formKey.currentState!.save();
         print('Email: $_email, Password: $_password');
-        Navigator.pushAndRemoveUntil(
+        Navigator.pushReplacementNamed(
           context,
-          MaterialPageRoute(
-            builder: (context) =>
-                widget.index == 0 ? MainReclutadores() : MainEstudiantes(),
-          ),
-          (Route<dynamic> route) => false,
+          widget.index == 0 ? AppRoutes.recruiter : AppRoutes.student,
         );
       } else {
         showDialog(
