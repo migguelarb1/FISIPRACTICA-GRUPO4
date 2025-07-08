@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/features/shared/widgets/header.dart';
 import 'package:flutter_app/features/recruiter/widgets/estudiantes_tab.dart';
 import 'package:flutter_app/features/recruiter/widgets/mi_empresa_tab.dart';
 
@@ -32,7 +33,7 @@ class _HomeReclutadorScreenState extends State<HomeReclutadorScreen>
         preferredSize: const Size.fromHeight(120.0),
         child: Column(
           children: [
-            //const Header( isHome: true ),
+            const Header(isHome: true),
             TabBar(
               controller: _tabController,
               tabs: const [

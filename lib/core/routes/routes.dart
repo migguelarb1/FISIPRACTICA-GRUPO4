@@ -3,6 +3,9 @@ import 'package:flutter_app/features/admin/main.dart';
 import 'package:flutter_app/features/admin/screens/screens.dart';
 import 'package:flutter_app/features/auth/screens/screens.dart';
 import 'package:flutter_app/features/recruiter/main_reclutadores.dart';
+import 'package:flutter_app/features/recruiter/screens/agregar_vacante_screen.dart';
+import 'package:flutter_app/features/recruiter/screens/home_reclutador_screen.dart';
+import 'package:flutter_app/features/recruiter/screens/ofertas_reclutador_screen.dart';
 import 'package:flutter_app/features/shared/screens/screens.dart';
 import 'package:flutter_app/features/student/main_estudiantes.dart';
 import 'package:flutter_app/features/student/screens/home/detalle_oferta_estudiante.dart';
@@ -25,6 +28,9 @@ class AppRoutes {
   static const String studentNotifications = '/student/home/notifications';
   static const String studentMessages = '/student/home/messages';
   static const String recruiter = '/recruiter';
+  static const String recruiterHome = '/recruiter/home';
+  static const String recruiterOffers = '/recruiter/offers';
+  static const String recruiterAddOffer = '/recruiter/offers/add';
 
   static Map<String, WidgetBuilder> routes = {
     splash: (context) => const SplashScreen(),
@@ -39,6 +45,9 @@ class AppRoutes {
     studentOffers: (context) => const HomeEstudianteScreen(),
     studentOfferDetails: (context) => const DetalleOfertaEstudianteScreen(),
     recruiter: (context) => const MainReclutadores(),
+    recruiterHome: (context) => const HomeReclutadorScreen(),
+    recruiterOffers: (context) => const OfertasReclutadorScreen(),
+    recruiterAddOffer: (context) => const AgregarVacanteReclutadorScreen(),
   };
 
   // Private constructor to prevent instantiation
