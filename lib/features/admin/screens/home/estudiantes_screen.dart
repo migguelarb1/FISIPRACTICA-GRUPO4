@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/features/admin/widgets/estudiante_card.dart';
 import 'package:flutter_app/features/shared/widgets/header.dart';
 
 class EstudiantesScreen extends StatefulWidget {
@@ -131,90 +132,6 @@ class EstudiantesScreenState extends State<EstudiantesScreen> {
     );
   }
 
-  void _showStudentDialog(Map<String, String> estudiante) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              CircleAvatar(
-                backgroundImage: AssetImage(estudiante['foto']!),
-                radius: 50,
-              ),
-              SizedBox(height: 10),
-              Text(
-                estudiante['nombre']!,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(estudiante['descripcion']!),
-            ],
-          ),
-          actions: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                TextButton(
-                  style: TextButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white),
-                  child: Text('Mantener'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                SizedBox(width: 10),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: Text('Eliminar'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    _showConfirmationDialog(estudiante);
-                  },
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showConfirmationDialog(Map<String, String> estudiante) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Confirmar eliminación'),
-          content:
-              Text('¿Seguro de que deseas eliminar a ${estudiante['nombre']}?'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text('Eliminar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final startIndex = (_currentPage - 1) * _itemsPerPage;
@@ -267,47 +184,11 @@ class EstudiantesScreenState extends State<EstudiantesScreen> {
               children: <Widget>[
                 Expanded(
                   child: ListView.builder(
-                    controller: _scrollController,
+                    // controller: _scrollController,
                     itemCount: currentEstudiantes.length,
                     itemBuilder: (context, index) {
-                      final estudiante = currentEstudiantes[index];
-                      return Container(
-                        margin: EdgeInsets.symmetric(
-                            vertical: 8.0, horizontal: 16.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 1,
-                              blurRadius: 3,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: InkWell(
-                          onTap: () => _showStudentDialog(estudiante),
-                          child: SizedBox(
-                            height: 100,
-                            child: Center(
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundImage:
-                                      AssetImage(estudiante['foto']!),
-                                ),
-                                title: Text(
-                                  estudiante['nombre']!,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Color(0xFF1E3984),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                      return EstudianteCard(
+                        estudiante: currentEstudiantes[index],
                       );
                     },
                   ),

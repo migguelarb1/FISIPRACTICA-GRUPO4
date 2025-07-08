@@ -174,6 +174,7 @@ class ReclutadorCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
       elevation: 5,
       child: InkWell(
+        borderRadius: BorderRadius.circular(12),
         onTap: () => _showReclutadorDialog(reclutador, context),
         child: SizedBox(
           height: 100,
@@ -185,8 +186,7 @@ class ReclutadorCard extends StatelessWidget {
                     backgroundImage: /* reclutador['foto'] != null
                         ? MemoryImage(reclutador['foto'] as Uint8List)
                         :  */
-                        const AssetImage('assets/profile_picture.png')
-                            as ImageProvider),
+                        AssetImage(reclutador['foto']!)),
               ),
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
