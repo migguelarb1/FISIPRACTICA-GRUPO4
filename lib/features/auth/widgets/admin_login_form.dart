@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/core.dart';
-import 'package:flutter_app/features/auth/services/auth_service.dart';
+import 'package:flutter_app/features/auth/services/user_services.dart';
 
 class LoginAdminForm extends StatefulWidget {
   const LoginAdminForm({super.key});
@@ -16,14 +16,31 @@ class LoginAdminFormState extends State<LoginAdminForm> {
 
   void _submit() async {
     if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
+        _formKey.currentState!.save();
+      final isLoggedIn = await UserServices.login(_email, _password, 'Admin');
+      if (!mounted) return;
 
-      // Guardar el estado de login
-      await AuthService.login(userType: 'admin');
-
-      // Navegar al home screen
-      if (mounted) {
+      if (isLoggedIn) {
         Navigator.pushReplacementNamed(context, AppRoutes.admin);
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text(
+                  'Error de inicio de sesión. Por favor, verifique sus credenciales.'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
       }
     }
   }
