@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/features/shared/widgets/header.dart';
 
 class MisPostulacionesScreen extends StatefulWidget {
   const MisPostulacionesScreen({super.key});
@@ -107,14 +108,26 @@ class _MisPostulacionesScreenState extends State<MisPostulacionesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 10),
-        _buildFilter(),
-        const SizedBox(height: 10),
-        Expanded(child: _buildPostulacionesList()),
-        _buildPaginationControls(),
-      ],
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60.0),
+        child: Column(
+          children: [
+            Header(
+              isHome: true,
+            )
+          ],
+        ),
+      ),
+      body: Column(
+        children: [
+          const SizedBox(height: 10),
+          _buildFilter(),
+          const SizedBox(height: 10),
+          Expanded(child: _buildPostulacionesList()),
+          _buildPaginationControls(),
+        ],
+      ),
     );
   }
 
