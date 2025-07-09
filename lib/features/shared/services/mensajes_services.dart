@@ -65,7 +65,7 @@ class MensajesServices {
             'id': chat['id'],
             'student': chat['student'],
             'recruiter': chat['recruiter'],
-            'job': chat['job'],
+            'job_id': chat['job_id'],
           });
         }
       }

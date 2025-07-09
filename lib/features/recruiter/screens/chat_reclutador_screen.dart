@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/utils/session_manager.dart';
+import 'package:flutter_app/features/recruiter/services/chat_header.dart';
 import 'package:flutter_app/features/shared/services/mensajes_services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:grouped_list/grouped_list.dart';
@@ -245,7 +246,6 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
         'mensaje': message,
         'fecha': DateTime.now().toIso8601String(),
         'is_me': true,
-        'status': MessageStatus.sending,
       };
 
       setState(() {
@@ -350,91 +350,101 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
       );
     }
 
-    return Column(
-      children: [
-        _buildChatHeader(),
-        _buildConnectionStatus(),
-        Expanded(
-          child: GroupedListView<dynamic, String>(
-            controller: _scrollController,
-            padding: const EdgeInsets.all(8),
-            reverse: false,
-            order: GroupedListOrder.ASC,
-            useStickyGroupSeparators: true,
-            floatingHeader: true,
-            elements: messages,
-            groupBy: (element) {
-              DateTime date = DateTime.parse(element['fecha']);
-              return "${date.year}/${date.month}/${date.day}";
-            },
-            groupHeaderBuilder: (element) => SizedBox(
-              height: 50,
-              child: Center(
-                child: Card(
-                  color: Colors.blue[900],
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      DateFormat('d MMM y')
-                          .format(DateTime.parse(element['fecha'])),
-                      style: const TextStyle(color: Colors.white),
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(70),
+        child: ChatHeader(
+          studentAvatar: widget.studentAvatar,
+          studentName: widget.studentName,
+          connectionStatus: connectionStatus,
+        ),
+      ),
+      body: Column(
+        children: [
+          _buildConnectionStatus(),
+          Expanded(
+            child: GroupedListView<dynamic, String>(
+              controller: _scrollController,
+              padding: const EdgeInsets.all(8),
+              reverse: false,
+              order: GroupedListOrder.ASC,
+              useStickyGroupSeparators: true,
+              floatingHeader: true,
+              elements: messages,
+              groupBy: (element) {
+                DateTime date = DateTime.parse(element['fecha']);
+                return "${date.year}/${date.month}/${date.day}";
+              },
+              groupHeaderBuilder: (element) => SizedBox(
+                height: 50,
+                child: Center(
+                  child: Card(
+                    color: Colors.blue[900],
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        DateFormat('d MMM y')
+                            .format(DateTime.parse(element['fecha'])),
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            itemBuilder: (context, element) {
-              return Align(
-                alignment: element['is_me']
-                    ? Alignment.centerRight
-                    : Alignment.centerLeft,
-                child: Container(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.75,
-                  ),
-                  padding: const EdgeInsets.all(12.0),
-                  margin: const EdgeInsets.symmetric(vertical: 5.0),
-                  decoration: BoxDecoration(
-                    color:
-                        element['is_me'] ? Colors.blue[100] : Colors.green[100],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: element['is_me']
-                        ? CrossAxisAlignment.end
-                        : CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        element['mensaje'] as String,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            DateFormat('HH:mm')
-                                .format(DateTime.parse(element['fecha'])),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
+              itemBuilder: (context, element) {
+                return Align(
+                  alignment: element['is_me']
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
+                  child: Container(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.75,
+                    ),
+                    padding: const EdgeInsets.all(12.0),
+                    margin: const EdgeInsets.symmetric(vertical: 5.0),
+                    decoration: BoxDecoration(
+                      color: element['is_me']
+                          ? Colors.blue[100]
+                          : Colors.green[100],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: element['is_me']
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          element['mensaje'] as String,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              DateFormat('HH:mm')
+                                  .format(DateTime.parse(element['fecha'])),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
                             ),
-                          ),
-                          if (element['is_me']) ...[
-                            const SizedBox(width: 4),
-                            _buildMessageStatus(element['status']),
+                            if (element['is_me']) ...[
+                              const SizedBox(width: 4),
+                              _buildMessageStatus(element['status']),
+                            ],
                           ],
-                        ],
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
-        ),
-        _buildMessageInput(),
-      ],
+          _buildMessageInput(),
+        ],
+      ),
     );
   }
 
@@ -518,63 +528,11 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (icon != null) ...[
-            icon,
-            const SizedBox(width: 8),
-          ],
+          icon,
+          const SizedBox(width: 8),
           Text(
             message,
             style: const TextStyle(color: Colors.white),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildChatHeader() {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      color: Colors.blue[900],
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundImage: widget.studentAvatar != null
-                ? NetworkImage(widget.studentAvatar!)
-                : const AssetImage('assets/user_icon.png') as ImageProvider,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.studentName,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  connectionStatus == ConnectionStatus.connected
-                      ? 'En línea'
-                      : 'Desconectado',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Icon(
-            connectionStatus == ConnectionStatus.connected
-                ? Icons.circle
-                : Icons.circle_outlined,
-            color: connectionStatus == ConnectionStatus.connected
-                ? Colors.green
-                : Colors.grey,
-            size: 12,
           ),
         ],
       ),
