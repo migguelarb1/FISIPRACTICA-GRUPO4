@@ -19,13 +19,11 @@ class _LoginFormState extends State<LoginForm> {
 
   void _submit() async {
     if (_formKey.currentState!.validate()) {
-      final response = await UserServices.login(_email.text, _password.text,
+      final isLoggedIn = await UserServices.login(_email.text, _password.text,
           widget.index == 0 ? 'Reclutador' : 'Estudiante');
       if (!mounted) return;
 
-      if (response.containsKey('token')) {
-        UserServices.setToken(response['token']!);
-        _formKey.currentState!.save();
+      if (isLoggedIn) {
         print('Email: $_email, Password: $_password');
         Navigator.pushReplacementNamed(
           context,

@@ -1,7 +1,7 @@
 //Pantalla de bienvenida
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/core.dart';
-import 'package:flutter_app/features/auth/services/auth_service.dart';
+import 'package:flutter_app/core/utils/session_manager.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -24,20 +24,33 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(seconds: 2));
 
     // Verificar si el usuario está logueado
-    bool isLoggedIn = await AuthService.isLoggedIn();
+    bool isLoggedIn = await SessionManager().isLoggedIn();
 
-    if (mounted) {
-      if (isLoggedIn) {
-        // Si está logueado, ir directamente al admin home
-        Navigator.pushReplacementNamed(context, AppRoutes.admin);
-      } else {
-        // Si no está logueado, esperar 3 segundos más y mostrar el botón
-        await Future.delayed(const Duration(seconds: 3));
-        if (mounted) {
-          setState(() {
-            _showButton = true;
-          });
+    if (isLoggedIn) {
+      final user = await SessionManager().getUser();
+      if (mounted) {
+        switch (user['role']) {
+          case 'Admin':
+            Navigator.pushReplacementNamed(context, AppRoutes.admin);
+            break;
+          case 'Reclutador':
+            Navigator.pushReplacementNamed(context, AppRoutes.recruiter);
+            break;
+          case 'Estudiante':
+            Navigator.pushReplacementNamed(context, AppRoutes.student);
+            break;
+          default:
+            Navigator.pushReplacementNamed(context, AppRoutes.lobby);
+            break;
         }
+      }
+    } else {
+      // Si no está logueado, esperar 3 segundos más y mostrar el botón
+      await Future.delayed(const Duration(seconds: 3));
+      if (mounted) {
+        setState(() {
+          _showButton = true;
+        });
       }
     }
   }
