@@ -49,6 +49,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
   static const int maxReconnectAttempts = 5;
 
   late IO.Socket socket;
+  bool socketInitialized = false;
   ConnectionStatus connectionStatus = ConnectionStatus.disconnected;
 
   String event = 'recruiter-message';
@@ -142,6 +143,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
       },
     );
 
+    socketInitialized = true;
     _setupSocketListeners();
 
     // Esperar a que se conecte o falle
@@ -165,7 +167,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
 
   void _setupSocketListeners() {
     socket.onConnect((_) {
-      if (!mounted) return;
+      if (!mounted || !socketInitialized) return;
       setState(() {
         connectionStatus = ConnectionStatus.connected;
         isReconnecting = false;
@@ -175,7 +177,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
     });
 
     socket.onDisconnect((_) {
-      if (!mounted) return;
+      if (!mounted || !socketInitialized) return;
       setState(() {
         connectionStatus = ConnectionStatus.disconnected;
         if (!isReconnecting && reconnectAttempts < maxReconnectAttempts) {
@@ -187,7 +189,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
 
     socket.onConnectError((error) {
       logger.e('Error de conexión: $error');
-      if (!mounted) return;
+      if (!mounted || !socketInitialized) return;
       setState(() {
         connectionStatus = ConnectionStatus.error;
         if (!isReconnecting && reconnectAttempts < maxReconnectAttempts) {
@@ -197,7 +199,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
     });
 
     socket.on(event, (data) {
-      if (!mounted) return;
+      if (!mounted || !socketInitialized) return;
       final receivedMessage = {
         'mensaje': data,
         'fecha': DateTime.now().toIso8601String(),
@@ -212,12 +214,14 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
 
     socket.onError((error) {
       logger.e('Error general del socket: $error');
-      if (!mounted) return;
+      if (!mounted || !socketInitialized) return;
       _showErrorSnackBar('Error en la conexión');
     });
   }
 
   void _handleReconnect() {
+    if (!mounted || !socketInitialized) return;
+    
     setState(() {
       isReconnecting = true;
       reconnectAttempts++;
@@ -225,7 +229,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
 
     reconnectTimer?.cancel();
     reconnectTimer = Timer(const Duration(seconds: 3), () async {
-      if (!mounted) return;
+      if (!mounted || !socketInitialized) return;
       if (connectionStatus != ConnectionStatus.connected) {
         await _initializeSocket();
       }
@@ -233,7 +237,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
   }
 
   Future<void> _sendMessage(String message) async {
-    if (message.trim().isEmpty) return;
+    if (message.trim().isEmpty || !mounted || !socketInitialized) return;
 
     setState(() => isSending = true);
 
@@ -259,7 +263,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
       // Simular delay para mostrar el estado de envío
       await Future.delayed(const Duration(milliseconds: 300));
 
-      if (!mounted) return;
+      if (!mounted || !socketInitialized) return;
       setState(() {
         newMessage['status'] = MessageStatus.sent;
         isSending = false;
@@ -268,7 +272,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
       _scrollToBottom();
     } catch (e) {
       logger.e('Error al enviar mensaje: $e');
-      if (!mounted) return;
+      if (!mounted || !socketInitialized) return;
       setState(() {
         messages.last['status'] = MessageStatus.error;
         isSending = false;
@@ -278,7 +282,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
   }
 
   void _scrollToBottom() {
-    if (_scrollController.hasClients) {
+    if (_scrollController.hasClients && mounted) {
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
         duration: const Duration(milliseconds: 300),
@@ -288,7 +292,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
   }
 
   void _showErrorSnackBar(String message) {
-    if (!mounted) return;
+    if (!mounted || !socketInitialized) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -300,13 +304,20 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
 
   void _disposeSocket() {
     try {
-      socket.off(event);
-      socket.offAny();
+      if (socketInitialized) {
+        // Marcar como no inicializado primero para evitar setState() en listeners
+        socketInitialized = false;
+        
+        // Remover todos los listeners
+        socket.off(event);
+        socket.offAny();
+        socket.clearListeners();
 
-      if (socket.connected) {
-        socket.disconnect();
+        if (socket.connected) {
+          socket.disconnect();
+        }
+        socket.dispose();
       }
-      socket.dispose();
     } catch (e) {
       logger.e('Error al desconectar el socket: $e');
     }
@@ -324,7 +335,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (mounted && connectionStatus == ConnectionStatus.disconnected) {
+    if (mounted && socketInitialized && connectionStatus == ConnectionStatus.disconnected) {
       _handleReconnect();
     }
   }
