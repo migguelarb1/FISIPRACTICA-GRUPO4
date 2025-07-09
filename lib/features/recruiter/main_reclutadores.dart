@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/core/core.dart';
+import 'package:flutter_app/features/recruiter/navigation/chats_nav.dart';
 import 'package:flutter_app/features/recruiter/navigation/home_nav.dart';
 import 'package:flutter_app/features/recruiter/navigation/offers_nav.dart';
 
@@ -25,9 +26,7 @@ class _MainReclutadoresState extends State<MainReclutadores> {
   final List<Widget> _pages = [
     RecruiterHomeNav(),
     OffersNav(),
-    //HomeReclutadorScreen(),
-    //OfertasReclutadorScreen(),
-    //ChatReclutadorScreen(),
+    RecruiterChatsNav(),
   ];
 
   @override
@@ -39,6 +38,7 @@ class _MainReclutadoresState extends State<MainReclutadores> {
   final List<GlobalKey<NavigatorState>> _navigatorKeys = [
     recruiterHomeNavigatorKey,
     recruiterOffersNavigatorKey,
+    recruiterChatsNavigatorKey,
   ];
 
   Future<void> _systemBackButtonPressed(result) async {

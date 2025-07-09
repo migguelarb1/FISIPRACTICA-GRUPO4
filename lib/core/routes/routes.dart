@@ -4,6 +4,7 @@ import 'package:flutter_app/features/admin/screens/screens.dart';
 import 'package:flutter_app/features/auth/screens/screens.dart';
 import 'package:flutter_app/features/recruiter/main_reclutadores.dart';
 import 'package:flutter_app/features/recruiter/screens/agregar_vacante_screen.dart';
+import 'package:flutter_app/features/recruiter/screens/chat_list_screen.dart';
 import 'package:flutter_app/features/recruiter/screens/home_reclutador_screen.dart';
 import 'package:flutter_app/features/recruiter/screens/ofertas_reclutador_screen.dart';
 import 'package:flutter_app/features/shared/screens/screens.dart';
@@ -31,6 +32,7 @@ class AppRoutes {
   static const String recruiterHome = '/recruiter/home';
   static const String recruiterOffers = '/recruiter/offers';
   static const String recruiterAddOffer = '/recruiter/offers/add';
+  static const String recruiterChats = '/recruiter/chats';
 
   static Map<String, WidgetBuilder> routes = {
     splash: (context) => const SplashScreen(),
@@ -48,6 +50,7 @@ class AppRoutes {
     recruiterHome: (context) => const HomeReclutadorScreen(),
     recruiterOffers: (context) => const OfertasReclutadorScreen(),
     recruiterAddOffer: (context) => const AgregarVacanteReclutadorScreen(),
+    recruiterChats: (context) => const ChatListScreen(),
   };
 
   // Private constructor to prevent instantiation
