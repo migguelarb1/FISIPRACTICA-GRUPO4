@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/utils/session_manager.dart';
+import 'package:flutter_app/features/recruiter/services/chat_header.dart';
 import 'package:flutter_app/features/shared/services/mensajes_services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:grouped_list/grouped_list.dart';
@@ -48,6 +49,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
   static const int maxReconnectAttempts = 5;
 
   late IO.Socket socket;
+  bool socketInitialized = false;
   ConnectionStatus connectionStatus = ConnectionStatus.disconnected;
 
   String event = 'recruiter-message';
@@ -141,6 +143,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
       },
     );
 
+    socketInitialized = true;
     _setupSocketListeners();
 
     // Esperar a que se conecte o falle
@@ -164,7 +167,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
 
   void _setupSocketListeners() {
     socket.onConnect((_) {
-      if (!mounted) return;
+      if (!mounted || !socketInitialized) return;
       setState(() {
         connectionStatus = ConnectionStatus.connected;
         isReconnecting = false;
@@ -174,7 +177,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
     });
 
     socket.onDisconnect((_) {
-      if (!mounted) return;
+      if (!mounted || !socketInitialized) return;
       setState(() {
         connectionStatus = ConnectionStatus.disconnected;
         if (!isReconnecting && reconnectAttempts < maxReconnectAttempts) {
@@ -186,7 +189,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
 
     socket.onConnectError((error) {
       logger.e('Error de conexión: $error');
-      if (!mounted) return;
+      if (!mounted || !socketInitialized) return;
       setState(() {
         connectionStatus = ConnectionStatus.error;
         if (!isReconnecting && reconnectAttempts < maxReconnectAttempts) {
@@ -196,7 +199,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
     });
 
     socket.on(event, (data) {
-      if (!mounted) return;
+      if (!mounted || !socketInitialized) return;
       final receivedMessage = {
         'mensaje': data,
         'fecha': DateTime.now().toIso8601String(),
@@ -211,12 +214,14 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
 
     socket.onError((error) {
       logger.e('Error general del socket: $error');
-      if (!mounted) return;
+      if (!mounted || !socketInitialized) return;
       _showErrorSnackBar('Error en la conexión');
     });
   }
 
   void _handleReconnect() {
+    if (!mounted || !socketInitialized) return;
+    
     setState(() {
       isReconnecting = true;
       reconnectAttempts++;
@@ -224,7 +229,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
 
     reconnectTimer?.cancel();
     reconnectTimer = Timer(const Duration(seconds: 3), () async {
-      if (!mounted) return;
+      if (!mounted || !socketInitialized) return;
       if (connectionStatus != ConnectionStatus.connected) {
         await _initializeSocket();
       }
@@ -232,7 +237,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
   }
 
   Future<void> _sendMessage(String message) async {
-    if (message.trim().isEmpty) return;
+    if (message.trim().isEmpty || !mounted || !socketInitialized) return;
 
     setState(() => isSending = true);
 
@@ -245,7 +250,6 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
         'mensaje': message,
         'fecha': DateTime.now().toIso8601String(),
         'is_me': true,
-        'status': MessageStatus.sending,
       };
 
       setState(() {
@@ -259,7 +263,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
       // Simular delay para mostrar el estado de envío
       await Future.delayed(const Duration(milliseconds: 300));
 
-      if (!mounted) return;
+      if (!mounted || !socketInitialized) return;
       setState(() {
         newMessage['status'] = MessageStatus.sent;
         isSending = false;
@@ -268,7 +272,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
       _scrollToBottom();
     } catch (e) {
       logger.e('Error al enviar mensaje: $e');
-      if (!mounted) return;
+      if (!mounted || !socketInitialized) return;
       setState(() {
         messages.last['status'] = MessageStatus.error;
         isSending = false;
@@ -278,7 +282,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
   }
 
   void _scrollToBottom() {
-    if (_scrollController.hasClients) {
+    if (_scrollController.hasClients && mounted) {
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
         duration: const Duration(milliseconds: 300),
@@ -288,7 +292,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
   }
 
   void _showErrorSnackBar(String message) {
-    if (!mounted) return;
+    if (!mounted || !socketInitialized) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -300,13 +304,20 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
 
   void _disposeSocket() {
     try {
-      socket.off(event);
-      socket.offAny();
+      if (socketInitialized) {
+        // Marcar como no inicializado primero para evitar setState() en listeners
+        socketInitialized = false;
+        
+        // Remover todos los listeners
+        socket.off(event);
+        socket.offAny();
+        socket.clearListeners();
 
-      if (socket.connected) {
-        socket.disconnect();
+        if (socket.connected) {
+          socket.disconnect();
+        }
+        socket.dispose();
       }
-      socket.dispose();
     } catch (e) {
       logger.e('Error al desconectar el socket: $e');
     }
@@ -324,7 +335,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (mounted && connectionStatus == ConnectionStatus.disconnected) {
+    if (mounted && socketInitialized && connectionStatus == ConnectionStatus.disconnected) {
       _handleReconnect();
     }
   }
@@ -350,91 +361,101 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
       );
     }
 
-    return Column(
-      children: [
-        _buildChatHeader(),
-        _buildConnectionStatus(),
-        Expanded(
-          child: GroupedListView<dynamic, String>(
-            controller: _scrollController,
-            padding: const EdgeInsets.all(8),
-            reverse: false,
-            order: GroupedListOrder.ASC,
-            useStickyGroupSeparators: true,
-            floatingHeader: true,
-            elements: messages,
-            groupBy: (element) {
-              DateTime date = DateTime.parse(element['fecha']);
-              return "${date.year}/${date.month}/${date.day}";
-            },
-            groupHeaderBuilder: (element) => SizedBox(
-              height: 50,
-              child: Center(
-                child: Card(
-                  color: Colors.blue[900],
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      DateFormat('d MMM y')
-                          .format(DateTime.parse(element['fecha'])),
-                      style: const TextStyle(color: Colors.white),
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(70),
+        child: ChatHeader(
+          studentAvatar: widget.studentAvatar,
+          studentName: widget.studentName,
+          connectionStatus: connectionStatus,
+        ),
+      ),
+      body: Column(
+        children: [
+          _buildConnectionStatus(),
+          Expanded(
+            child: GroupedListView<dynamic, String>(
+              controller: _scrollController,
+              padding: const EdgeInsets.all(8),
+              reverse: false,
+              order: GroupedListOrder.ASC,
+              useStickyGroupSeparators: true,
+              floatingHeader: true,
+              elements: messages,
+              groupBy: (element) {
+                DateTime date = DateTime.parse(element['fecha']);
+                return "${date.year}/${date.month}/${date.day}";
+              },
+              groupHeaderBuilder: (element) => SizedBox(
+                height: 50,
+                child: Center(
+                  child: Card(
+                    color: Colors.blue[900],
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        DateFormat('d MMM y')
+                            .format(DateTime.parse(element['fecha'])),
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            itemBuilder: (context, element) {
-              return Align(
-                alignment: element['is_me']
-                    ? Alignment.centerRight
-                    : Alignment.centerLeft,
-                child: Container(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.75,
-                  ),
-                  padding: const EdgeInsets.all(12.0),
-                  margin: const EdgeInsets.symmetric(vertical: 5.0),
-                  decoration: BoxDecoration(
-                    color:
-                        element['is_me'] ? Colors.blue[100] : Colors.green[100],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: element['is_me']
-                        ? CrossAxisAlignment.end
-                        : CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        element['mensaje'] as String,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            DateFormat('HH:mm')
-                                .format(DateTime.parse(element['fecha'])),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
+              itemBuilder: (context, element) {
+                return Align(
+                  alignment: element['is_me']
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
+                  child: Container(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.75,
+                    ),
+                    padding: const EdgeInsets.all(12.0),
+                    margin: const EdgeInsets.symmetric(vertical: 5.0),
+                    decoration: BoxDecoration(
+                      color: element['is_me']
+                          ? Colors.blue[100]
+                          : Colors.green[100],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: element['is_me']
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          element['mensaje'] as String,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              DateFormat('HH:mm')
+                                  .format(DateTime.parse(element['fecha'])),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
                             ),
-                          ),
-                          if (element['is_me']) ...[
-                            const SizedBox(width: 4),
-                            _buildMessageStatus(element['status']),
+                            if (element['is_me']) ...[
+                              const SizedBox(width: 4),
+                              _buildMessageStatus(element['status']),
+                            ],
                           ],
-                        ],
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
-        ),
-        _buildMessageInput(),
-      ],
+          _buildMessageInput(),
+        ],
+      ),
     );
   }
 
@@ -518,63 +539,11 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (icon != null) ...[
-            icon,
-            const SizedBox(width: 8),
-          ],
+          icon,
+          const SizedBox(width: 8),
           Text(
             message,
             style: const TextStyle(color: Colors.white),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildChatHeader() {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      color: Colors.blue[900],
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundImage: widget.studentAvatar != null
-                ? NetworkImage(widget.studentAvatar!)
-                : const AssetImage('assets/user_icon.png') as ImageProvider,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.studentName,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  connectionStatus == ConnectionStatus.connected
-                      ? 'En línea'
-                      : 'Desconectado',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Icon(
-            connectionStatus == ConnectionStatus.connected
-                ? Icons.circle
-                : Icons.circle_outlined,
-            color: connectionStatus == ConnectionStatus.connected
-                ? Colors.green
-                : Colors.grey,
-            size: 12,
           ),
         ],
       ),

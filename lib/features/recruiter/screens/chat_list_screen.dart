@@ -47,11 +47,11 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
       // Obtener chats del reclutador
       // Por ahora usamos valores de ejemplo, pero deberías obtenerlos del contexto
-      final recruiterId = user!['recruiter_id'];
+      final recruiterId = user!['sub'];
 
       final fetchedChats = await MensajesServices.getChats(
         recruiterId: recruiterId.toString(),
-        type: 'recruiter',
+        type: 'Reclutador',
       );
 
       // Enriquecer los chats con información adicional
@@ -99,7 +99,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
       } else {
         filteredChats = chats.where((chat) {
           final studentName = chat['student']['name']?.toLowerCase() ?? '';
-          final jobTitle = chat['job']['title']?.toLowerCase() ?? '';
+          final jobTitle =
+              chat['job_id']; /* ']['title']?.toLowerCase() ?? ''; */
           final lastMessage = chat['lastMessage']?.toLowerCase() ?? '';
           final query = searchQuery.toLowerCase();
 
@@ -134,8 +135,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
       MaterialPageRoute(
         builder: (context) => ChatReclutadorScreen(
           studentId: chat['student']['id'].toString(),
-          jobId: chat['job']['id'].toString(),
-          studentName: chat['student']['name'] ?? 'Estudiante',
+          jobId: chat['job_id'].toString() /* ']['id'].toString() */,
+          studentName:
+              '${chat['student']['first_name']} ${chat['student']['last_name']}',
           studentAvatar: chat['student']['avatar'],
           chatId: chat['id'].toString(),
         ),
@@ -389,7 +391,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   Widget _buildChatItem(Map<String, dynamic> chat) {
     final student = chat['student'];
-    final job = chat['job'];
+    final job = chat['job_id'];
     final lastMessage = chat['lastMessage'] as String?;
     final lastMessageTime = chat['lastMessageTime'] as String?;
     final unreadCount = chat['unreadCount'] as int? ?? 0;
@@ -458,7 +460,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         // Nombre del estudiante
                         Expanded(
                           child: Text(
-                            student['name'] ?? 'Estudiante',
+                            '${student['first_name']} ${student['last_name']}',
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -484,7 +486,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
                     // Información del trabajo
                     Text(
-                      job['title'] ?? 'Oferta de trabajo',
+                      job.toString() /* ['title'] ?? 'Oferta de trabajo' */,
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
