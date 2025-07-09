@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/constants/constants.dart';
 import 'package:flutter_app/core/utils/session_manager.dart';
-import 'package:flutter_app/features/shared/widgets/header.dart';
 import 'package:flutter_app/features/shared/services/mensajes_services.dart';
-import 'package:flutter_app/features/recruiter/screens/chat_reclutador_screen.dart';
+import 'package:flutter_app/features/shared/widgets/header.dart';
+import 'package:flutter_app/features/student/screens/chat/chat_estudiante_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 
 final logger = Logger();
 
-class ChatListScreen extends StatefulWidget {
-  const ChatListScreen({super.key});
+class ChatEstudianteListScreen extends StatefulWidget {
+  const ChatEstudianteListScreen({super.key});
 
   @override
-  State<ChatListScreen> createState() => _ChatListScreenState();
+  State<ChatEstudianteListScreen> createState() =>
+      _ChatEstudianteListScreenState();
 }
 
-class _ChatListScreenState extends State<ChatListScreen> {
+class _ChatEstudianteListScreenState extends State<ChatEstudianteListScreen> {
   List<Map<String, dynamic>> chats = [];
   List<Map<String, dynamic>> filteredChats = [];
   bool isLoading = true;
@@ -50,8 +51,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
       final recruiterId = user!['sub'];
 
       final fetchedChats = await MensajesServices.getChats(
-        recruiterId: recruiterId.toString(),
-        type: 'Reclutador',
+        userId: recruiterId.toString(),
+        type: 'Estudiante',
       );
 
       // Enriquecer los chats con información adicional
@@ -133,12 +134,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ChatReclutadorScreen(
-          studentId: chat['student']['id'].toString(),
+        builder: (context) => ChatEstudianteScreen(
+          recruiterId: chat['recruiter']['id'].toString(),
           jobId: chat['job_id'].toString() /* ']['id'].toString() */,
-          studentName:
-              '${chat['student']['first_name']} ${chat['student']['last_name']}',
-          studentAvatar: chat['student']['avatar'],
+          recruiterName:
+              '${chat['recruiter']['first_name']} ${chat['recruiter']['last_name']}',
+          recruiterAvatar: chat['recruiter']['avatar'],
           chatId: chat['id'].toString(),
         ),
       ),
@@ -390,7 +391,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 
   Widget _buildChatItem(Map<String, dynamic> chat) {
-    final student = chat['student'];
+    final recruiter = chat['recruiter'];
     final job = chat['job_id'];
     final lastMessage = chat['lastMessage'] as String?;
     final lastMessageTime = chat['lastMessageTime'] as String?;
@@ -415,10 +416,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   CircleAvatar(
                     radius: 30,
                     backgroundColor: AppColors.secondary,
-                    backgroundImage: student['avatar'] != null
-                        ? NetworkImage(student['avatar'])
+                    backgroundImage: recruiter['avatar'] != null
+                        ? NetworkImage(recruiter['avatar'])
                         : null,
-                    child: student['avatar'] == null
+                    child: recruiter['avatar'] == null
                         ? Icon(
                             Icons.person,
                             size: 30,
@@ -460,7 +461,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         // Nombre del estudiante
                         Expanded(
                           child: Text(
-                            '${student['first_name']} ${student['last_name']}',
+                            '${recruiter['first_name']} ${recruiter['last_name']}',
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,

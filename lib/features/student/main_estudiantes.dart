@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/core/core.dart';
+import 'package:flutter_app/features/student/navigation/chats_nav.dart';
 import 'package:flutter_app/features/student/navigation/home_nav.dart';
+import 'package:flutter_app/features/student/screens/applications/postulaciones_screen.dart';
 
 class MainEstudiantes extends StatefulWidget {
   const MainEstudiantes({super.key});
@@ -21,6 +23,8 @@ class _MainEstudiantesState extends State<MainEstudiantes> {
 
   final List<GlobalKey<NavigatorState>> _navigatorKeys = [
     homeEstudianteNavigatorKey,
+    GlobalKey<NavigatorState>(),
+    studentChatsNavigatorKey,
   ];
 
   Future<void> _systemBackButtonPressed(result) async {
@@ -33,6 +37,8 @@ class _MainEstudiantesState extends State<MainEstudiantes> {
 
   final List<Widget> _pages = [
     HomeEstudianteNav(),
+    MisPostulacionesScreen(),
+    StudentChatsNav(),
     //HomeEstudianteScreen(),
     //MisPostulacionesScreen(),
     //ChatScreen(),
@@ -99,13 +105,13 @@ class _MainEstudiantesState extends State<MainEstudiantes> {
               ),
               NavigationDestination(
                 icon: Image.asset(
-                  'assets/chatbot_icon.png',
+                  'assets/chat_icon.png',
                   color: Colors.white,
                   width: 24,
                   height: 24,
                 ),
                 selectedIcon: Image.asset(
-                  'assets/chatbot_icon.png',
+                  'assets/chat_icon.png',
                   color: AppColors.primary,
                   width: 24,
                   height: 24,

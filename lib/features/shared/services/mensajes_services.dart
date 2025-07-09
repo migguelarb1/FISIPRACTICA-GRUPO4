@@ -46,11 +46,11 @@ class MensajesServices {
   }
 
   static Future<List<Map<String, dynamic>>> getChats(
-      {required String recruiterId, required String type}) async {
+      {required String userId, required String type}) async {
     try {
       String? token = await SessionManager().getAuthToken();
       Response response = await dio.get(
-        '/chat/$recruiterId?type=$type',
+        '/chat/$userId?type=$type',
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',
