@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/core.dart';
+import 'package:flutter_app/features/auth/screens/register_screen.dart';
+import 'package:flutter_app/features/auth/screens/reinicio_contrasena_screen.dart';
 import 'package:flutter_app/features/auth/services/user_services.dart';
 
 class LoginForm extends StatefulWidget {
@@ -116,7 +118,12 @@ class _LoginFormState extends State<LoginForm> {
                 const Text('Aun no eres usuario?',
                     style: TextStyle(fontSize: 14)),
                 TextButton(
-                  onPressed: null,
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => const RegisterScreen()),
+                    );
+                  },
                   child: const Text(
                     'Registrate',
                     style: TextStyle(fontWeight: FontWeight.bold),
@@ -126,7 +133,12 @@ class _LoginFormState extends State<LoginForm> {
             ),
             const SizedBox(height: 10),
             TextButton(
-              onPressed: null,
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const ResetPasswordScreen()),
+                );
+              },
               child: const Text('Olvidaste tu contraseña?'),
             )
           ]
