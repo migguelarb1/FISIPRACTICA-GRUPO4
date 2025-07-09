@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/core.dart';
-import 'package:flutter_app/features/auth/services/auth_service.dart';
+import 'package:flutter_app/features/auth/services/user_services.dart';
 import 'package:flutter_app/features/auth/widgets/admin_login_form.dart';
+import 'package:logger/logger.dart';
+
+final logger = Logger();
 
 class Header extends StatelessWidget {
   final bool isHome;
@@ -15,8 +18,10 @@ class Header extends StatelessWidget {
 
   Future<void> _logout() async {
     try {
-      await AuthService.logout();
+      // await AuthService.logout();
+      await UserServices.logout();
     } catch (e) {
+      logger.e(e);
       // En producción, aquí podrías registrar el error en un servicio de logging
     }
   }

@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_app/core/utils/dio.dart';
-import 'package:flutter_app/features/auth/services/user_services.dart';
+import 'package:flutter_app/core/utils/session_manager.dart';
 import 'package:logger/logger.dart';
 
 final logger = Logger();
@@ -20,7 +20,7 @@ class ReclutadoresServices {
       final companyId = body['company_id'];
       final description = body['description'];
       final fechaInicio = body['position_start_date'];
-      String? token = await UserServices.getToken();
+      String? token = await SessionManager().getAuthToken();
       Response response = await dio.post(
         '/recruiter',
         options: Options(
@@ -67,7 +67,7 @@ class ReclutadoresServices {
 
   static Future<List<Map<String, dynamic>>> getReclutadores() async {
     try {
-      String? token = await UserServices.getToken();
+      String? token = await SessionManager().getAuthToken();
       Response response = await dio.get(
         '/recruiter',
         options: Options(
@@ -118,7 +118,7 @@ class ReclutadoresServices {
   // Aquí agregamos el método registrarVacante
   static Future<bool> registrarVacante(Map<String, dynamic> vacante) async {
     try {
-      String? token = await UserServices.getToken();
+      String? token = await SessionManager().getAuthToken();
 
       // Crear el cuerpo de la solicitud según el DTO
       Map<String, dynamic> body = {
@@ -155,7 +155,7 @@ class ReclutadoresServices {
 
   static Future<int> getReclutadorById(int id) async {
     try {
-      String? token = await UserServices.getToken();
+      String? token = await SessionManager().getAuthToken();
       Response response = await dio.get(
         '/recruiter/$id',
         options: Options(
@@ -187,7 +187,7 @@ class ReclutadoresServices {
   static Future<Map<String, dynamic>> updateReclutador(int id, body) async {
     try {
       logger.d(body);
-      String? token = await UserServices.getToken();
+      String? token = await SessionManager().getAuthToken();
       Response response = await dio.patch(
         '/recruiter/$id',
         options: Options(

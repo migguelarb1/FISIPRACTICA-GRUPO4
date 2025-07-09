@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/features/auth/services/user_services.dart';
+import 'package:flutter_app/core/utils/session_manager.dart';
 import 'package:flutter_app/features/recruiter/services/reclutadores_services.dart';
 import 'package:flutter_app/features/shared/widgets/header.dart';
 
@@ -44,7 +44,7 @@ class _AgregarVacanteReclutadorScreenState
       _isLoading = true;
     });
 
-    String? userId = await UserServices.getUserId();
+    String? userId = (await SessionManager().getUser())['sub'];
     if (userId == null) {
       _mostrarError("No se pudo obtener el ID del reclutador");
       setState(() {

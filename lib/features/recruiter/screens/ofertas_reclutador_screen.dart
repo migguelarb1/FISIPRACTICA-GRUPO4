@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/core.dart';
-import 'package:flutter_app/features/recruiter/services/reclutadores_services.dart';
+import 'package:flutter_app/features/recruiter/services/ofertas_services.dart';
 import 'package:flutter_app/features/shared/widgets/header.dart';
 
 class OfertasReclutadorScreen extends StatefulWidget {
@@ -23,8 +23,7 @@ class _OfertasReclutadorScreenState extends State<OfertasReclutadorScreen> {
 
   Future<void> _loadVacantes() async {
     try {
-      List<Map<String, dynamic>> data =
-          await ReclutadoresServices.getReclutadores();
+      List<Map<String, dynamic>> data = await OfertasServices.getOfertas();
       setState(() {
         vacantes = data;
         isLoading = false;
