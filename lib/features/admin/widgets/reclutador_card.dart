@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 
 class ReclutadorCard extends StatelessWidget {
-  const ReclutadorCard(
-      {super.key, required this.reclutador, required this.index});
   final Map<String, String> reclutador;
   final int index;
+  final Function(Map<String, String>)? onUpdate; // <-- Callback para actualizar
+
+  const ReclutadorCard({
+    super.key,
+    required this.reclutador,
+    required this.index,
+    this.onUpdate,
+  });
 
   void _showConfirmationDialog(
-      Map<String, dynamic> reclutador, BuildContext context) {
+      Map<String, String> reclutador, BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -26,7 +32,7 @@ class ReclutadorCard extends StatelessWidget {
               child: Text('Eliminar'),
               onPressed: () {
                 Navigator.of(context).pop();
-                // Lógica para eliminar al reclutador
+                // Aquí podrías notificar al padre con otra función si deseas eliminar realmente
               },
             ),
           ],
@@ -35,8 +41,100 @@ class ReclutadorCard extends StatelessWidget {
     );
   }
 
+  void _showEditarReclutadorDialog(
+      Map<String, String> reclutador, BuildContext context) {
+    final TextEditingController empresaController =
+        TextEditingController(text: reclutador['empresa']);
+    final TextEditingController experienciaController =
+        TextEditingController(text: reclutador['experiencia']);
+    final TextEditingController fechaController =
+        TextEditingController(text: reclutador['fecha']);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Editar Reclutador',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 15),
+                TextField(
+                  controller: empresaController,
+                  decoration: InputDecoration(
+                    labelText: 'Empresa',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 10),
+                TextField(
+                  controller: experienciaController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Años de experiencia',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 10),
+                TextField(
+                  controller: fechaController,
+                  decoration: InputDecoration(
+                    labelText: 'Fecha de ingreso',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.grey,
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Cancelar'),
+                    ),
+                    SizedBox(width: 10),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: () {
+                        reclutador['empresa'] = empresaController.text;
+                        reclutador['experiencia'] = experienciaController.text;
+                        reclutador['fecha'] = fechaController.text;
+
+                        Navigator.of(context).pop();
+                        if (onUpdate != null) {
+                          onUpdate!(reclutador); // Notificar al padre
+                        }
+                      },
+                      child: Text('Guardar'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void _showReclutadorDialog(
-      Map<String, dynamic> reclutador, BuildContext context) {
+      Map<String, String> reclutador, BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -47,20 +145,14 @@ class ReclutadorCard extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(20),
             width: 300,
-            constraints: BoxConstraints(
-              maxHeight: 400,
-            ),
+            constraints: BoxConstraints(maxHeight: 400),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CircleAvatar(
                   radius: 40,
-                  backgroundImage: /* reclutador['foto'] != null
-                      ? MemoryImage(reclutador['foto'] as Uint8List)
-                      : */
-                      const AssetImage('assets/profile_picture.png')
-                          as ImageProvider,
+                  backgroundImage: const AssetImage('assets/profile_picture.png'),
                 ),
                 SizedBox(height: 10),
                 Text(
@@ -83,14 +175,8 @@ class ReclutadorCard extends StatelessWidget {
                       ),
                       child: Text('Editar'),
                       onPressed: () {
-                        Navigator.of(context).pop(); // Cierra el diálogo actual
-                        /* Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                EditarReclutadorScreen(reclutador: reclutador),
-                          ),
-                        ); */
+                        Navigator.of(context).pop();
+                        _showEditarReclutadorDialog(reclutador, context);
                       },
                     ),
                     SizedBox(width: 10),
@@ -183,10 +269,7 @@ class ReclutadorCard extends StatelessWidget {
               leading: Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: CircleAvatar(
-                    backgroundImage: /* reclutador['foto'] != null
-                        ? MemoryImage(reclutador['foto'] as Uint8List)
-                        :  */
-                        AssetImage(reclutador['foto']!)),
+                    backgroundImage: AssetImage(reclutador['foto']!)),
               ),
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -221,3 +304,4 @@ class ReclutadorCard extends StatelessWidget {
     );
   }
 }
+
