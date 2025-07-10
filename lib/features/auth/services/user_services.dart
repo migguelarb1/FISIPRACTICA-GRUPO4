@@ -18,6 +18,9 @@ class UserServices {
           'password': password,
           'role': role,
         },
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
       );
       final user = JwtDecoder.decode(response.data['access_token']);
       await _sessionManager.createSession(response.data['access_token'], user);
