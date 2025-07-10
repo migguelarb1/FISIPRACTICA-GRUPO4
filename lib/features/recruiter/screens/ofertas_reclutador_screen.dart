@@ -72,12 +72,14 @@ class _OfertasReclutadorScreenState extends State<OfertasReclutadorScreen> {
                                 Row(
                                   children: [
                                     CircleAvatar(
-                                      backgroundColor: Colors.blue,
+                                      backgroundImage: AssetImage(
+                                          'assets/${vacante["empresa"].toLowerCase()}.png'),
+                                      /* backgroundColor: Colors.blue,
                                       child: Text(
                                         vacante["empresa"]?[0] ?? '?',
                                         style: const TextStyle(
                                             color: Colors.white),
-                                      ),
+                                      ), */
                                     ),
                                     const SizedBox(width: 10),
                                     Column(
