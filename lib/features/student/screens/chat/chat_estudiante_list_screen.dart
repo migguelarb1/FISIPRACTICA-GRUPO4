@@ -60,7 +60,7 @@ class _ChatEstudianteListScreenState extends State<ChatEstudianteListScreen> {
         try {
           final messages = await MensajesServices.getMensajes(chat['id']);
           if (messages.isNotEmpty) {
-            final lastMessage = messages.last;
+            final lastMessage = messages.first;
             chat['lastMessage'] = lastMessage['mensaje'];
             chat['lastMessageTime'] = lastMessage['fecha'];
             chat['unreadCount'] = messages.where((msg) => !msg['is_me']).length;

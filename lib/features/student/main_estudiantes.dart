@@ -4,21 +4,69 @@ import 'package:flutter_app/core/core.dart';
 import 'package:flutter_app/features/student/navigation/chats_nav.dart';
 import 'package:flutter_app/features/student/navigation/home_nav.dart';
 import 'package:flutter_app/features/student/screens/applications/postulaciones_screen.dart';
+import 'package:flutter_app/features/student/screens/chat/chat_estudiante_screen.dart';
 
 class MainEstudiantes extends StatefulWidget {
-  const MainEstudiantes({super.key});
+  final int initialTabIndex;
+  
+  const MainEstudiantes({
+    super.key,
+    this.initialTabIndex = 0,
+  });
 
   @override
   State<MainEstudiantes> createState() => _MainEstudiantesState();
+
+  // Método estático para cambiar la pestaña desde un descendiente
+  static void changeTabAndNavigateToChat(BuildContext context, Map<String, String> chatInfo) {
+    final mainEstudiantesState = context.findAncestorStateOfType<_MainEstudiantesState>();
+    if (mainEstudiantesState != null) {
+      mainEstudiantesState._changeTabAndNavigateToChat(chatInfo);
+    }
+  }
 }
 
 class _MainEstudiantesState extends State<MainEstudiantes> {
   int currentIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    currentIndex = widget.initialTabIndex;
+  }
+
+  void _changeTabAndNavigateToChat(Map<String, String> chatInfo) {
+    // Cambiar a la pestaña de Chat (índice 2)
+    setState(() {
+      currentIndex = 2;
+    });
+    
+    // Esperar a que se actualice la interfaz y luego navegar al chat
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        studentChatsNavigatorKey.currentState?.push(
+          MaterialPageRoute(
+            builder: (context) => ChatEstudianteScreen(
+              recruiterId: chatInfo['recruiterId']!,
+              jobId: chatInfo['jobId']!,
+              recruiterName: chatInfo['recruiterName']!,
+              chatId: chatInfo['chatId']!,
+            ),
+          ),
+        );
+      });
+    });
+  }
+
   void goToPage(int index) {
     setState(() {
       currentIndex = index;
     });
+  }
+
+  // Método público para cambiar a la pestaña de chat
+  void goToChatsTab() {
+    goToPage(2);
   }
 
   final List<GlobalKey<NavigatorState>> _navigatorKeys = [

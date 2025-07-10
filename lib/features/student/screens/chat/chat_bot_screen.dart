@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/utils/session_manager.dart';
 import 'package:flutter_app/features/shared/services/mensajes_services.dart';
-import 'package:flutter_app/features/student/screens/chat/chat_estudiante_screen.dart';
 import 'package:flutter_app/features/student/services/chat_services.dart';
 import 'package:flutter_app/features/student/widgets/chat_bot_header.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -455,18 +454,18 @@ Puedes hacer clic en el botón "Comunicarme con un reclutador" que aparece debaj
       return;
     }
     if (!context.mounted) return;
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChatEstudianteScreen(
-          recruiterId: widget.recruiter['user']['id'].toString(),
-          jobId: widget.jobId,
-          recruiterName:
-              '${widget.recruiter['user']['first_name']} ${widget.recruiter['user']['last_name']}',
-          chatId: chat['id'].toString(),
-        ),
-      ),
-    );
+    
+    // Información del chat para retornar al widget padre
+    final chatInfo = {
+      'recruiterId': widget.recruiter['user']['id'].toString(),
+      'jobId': widget.jobId,
+      'recruiterName': '${widget.recruiter['user']['first_name']} ${widget.recruiter['user']['last_name']}',
+      'chatId': chat['id'].toString(),
+      'goToChat': true, // Flag para indicar que se debe navegar al chat
+    };
+    
+    // Retornar al widget padre con la información del chat
+    Navigator.pop(context, chatInfo);
   }
 
   @override
