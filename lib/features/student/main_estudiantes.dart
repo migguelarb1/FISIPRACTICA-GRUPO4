@@ -3,12 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_app/core/core.dart';
 import 'package:flutter_app/features/student/navigation/chats_nav.dart';
 import 'package:flutter_app/features/student/navigation/home_nav.dart';
+import 'package:flutter_app/features/student/screens/account/perfil_estudiante_screen.dart';
 import 'package:flutter_app/features/student/screens/applications/postulaciones_screen.dart';
 import 'package:flutter_app/features/student/screens/chat/chat_estudiante_screen.dart';
 
 class MainEstudiantes extends StatefulWidget {
   final int initialTabIndex;
-  
+
   const MainEstudiantes({
     super.key,
     this.initialTabIndex = 0,
@@ -18,8 +19,10 @@ class MainEstudiantes extends StatefulWidget {
   State<MainEstudiantes> createState() => _MainEstudiantesState();
 
   // Método estático para cambiar la pestaña desde un descendiente
-  static void changeTabAndNavigateToChat(BuildContext context, Map<String, String> chatInfo) {
-    final mainEstudiantesState = context.findAncestorStateOfType<_MainEstudiantesState>();
+  static void changeTabAndNavigateToChat(
+      BuildContext context, Map<String, String> chatInfo) {
+    final mainEstudiantesState =
+        context.findAncestorStateOfType<_MainEstudiantesState>();
     if (mainEstudiantesState != null) {
       mainEstudiantesState._changeTabAndNavigateToChat(chatInfo);
     }
@@ -40,7 +43,7 @@ class _MainEstudiantesState extends State<MainEstudiantes> {
     setState(() {
       currentIndex = 2;
     });
-    
+
     // Esperar a que se actualice la interfaz y luego navegar al chat
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.delayed(const Duration(milliseconds: 100), () {
@@ -73,6 +76,7 @@ class _MainEstudiantesState extends State<MainEstudiantes> {
     homeEstudianteNavigatorKey,
     GlobalKey<NavigatorState>(),
     studentChatsNavigatorKey,
+    GlobalKey<NavigatorState>(),
   ];
 
   Future<void> _systemBackButtonPressed(result) async {
@@ -87,6 +91,7 @@ class _MainEstudiantesState extends State<MainEstudiantes> {
     HomeEstudianteNav(),
     MisPostulacionesScreen(),
     StudentChatsNav(),
+    PerfilEstudianteScreen(),
     //HomeEstudianteScreen(),
     //MisPostulacionesScreen(),
     //ChatScreen(),
