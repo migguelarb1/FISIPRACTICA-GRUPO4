@@ -305,7 +305,7 @@ Estoy aquí para ayudarte con información sobre el proceso de selección en ${w
       setState(() {
         isTyping = false;
         // Agregar al final para reverse: true
-        messages.add({
+        messages.insert(0, {
           'mensaje': data,
           'fecha': DateTime.now().toIso8601String(),
           'is_me': false,
@@ -363,7 +363,7 @@ Estoy aquí para ayudarte con información sobre el proceso de selección en ${w
 
       setState(() {
         // Agregar al final para reverse: true
-        messages.add(messageWithStatus);
+        messages.insert(0, messageWithStatus);
         _controller.clear();
         isTyping = true;
       });
@@ -500,7 +500,7 @@ Puedes hacer clic en el botón "Comunicarme con un reclutador" que aparece debaj
               floatingHeader: true,
               elements: messages,
               groupBy: (element) {
-                DateTime date = DateTime.parse(element['fecha']);
+                DateTime date = DateTime.parse(element['fecha']).toLocal();
                 return "${date.year}/${date.month}/${date.day}";
               },
               groupHeaderBuilder: (element) => SizedBox(
@@ -512,7 +512,7 @@ Puedes hacer clic en el botón "Comunicarme con un reclutador" que aparece debaj
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         DateFormat('d MMM y')
-                            .format(DateTime.parse(element['fecha'])),
+                            .format(DateTime.parse(element['fecha']).toLocal()),
                         style: const TextStyle(color: Colors.white),
                       ),
                     ),
@@ -523,9 +523,9 @@ Puedes hacer clic en el botón "Comunicarme con un reclutador" que aparece debaj
                 return Column(
                   children: [
                     _buildMessage(element),
-                    if (element['showOptions'] == true && !element['is_me'])
+                    if (!element['is_me'] && messages.first == element)
                       _buildOptions(),
-                    if (isTyping && messages.last == element)
+                    if (isTyping && messages.first == element)
                       _buildTypingIndicator(),
                   ],
                 );
@@ -603,7 +603,8 @@ Puedes hacer clic en el botón "Comunicarme con un reclutador" que aparece debaj
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  DateFormat('HH:mm').format(DateTime.parse(message['fecha'])),
+                  DateFormat('HH:mm')
+                      .format(DateTime.parse(message['fecha']).toLocal()),
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey[600],
