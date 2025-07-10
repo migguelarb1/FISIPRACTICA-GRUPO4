@@ -29,9 +29,9 @@ class MensajesServices {
             'user_id': mensaje['user_id'],
             'fecha': mensaje['create_date'],
             'estudiante_id':
-                mensaje['chat'] != null ? mensaje['chat']['student_id'] : null,
+                mensaje['chat'] != null ? mensaje['chat']['student']['id'] : null,
             'reclutador_id': mensaje['chat'] != null
-                ? mensaje['chat']['recruiter_id']
+                ? mensaje['chat']['recruiter']['id']
                 : null,
             'job_id':
                 mensaje['chat'] != null ? mensaje['chat']['job_id'] : null,
@@ -46,11 +46,11 @@ class MensajesServices {
   }
 
   static Future<List<Map<String, dynamic>>> getChats(
-      {required String recruiterId, required String type}) async {
+      {required String userId, required String type}) async {
     try {
       String? token = await SessionManager().getAuthToken();
       Response response = await dio.get(
-        '/chat/$recruiterId?type=$type',
+        '/chat/$userId?type=$type',
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/core/core.dart';
 import 'package:flutter_app/features/admin/navigation/navigation.dart';
+import 'package:flutter_app/features/admin/screens/offers/admin_ofertas_screen.dart';
+import 'package:flutter_app/features/admin/screens/screens.dart';
 
 class MainAdmin extends StatefulWidget {
   const MainAdmin({super.key});
@@ -21,6 +23,8 @@ class _MainAdminState extends State<MainAdmin> {
 
   final List<GlobalKey<NavigatorState>> _navigatorKeys = [
     homeNavigatorKey,
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
   ];
 
   Future<void> _systemBackButtonPressed(result) async {
@@ -35,7 +39,10 @@ class _MainAdminState extends State<MainAdmin> {
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       HomeNav(),
-      Center(
+      EditarOfertasScreen(),
+      // EditarAdminScreen(),
+      AdminProfileScreen(), // 👈 PERFIL ACTIVO
+      /* Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -51,24 +58,7 @@ class _MainAdminState extends State<MainAdmin> {
             ),
           ],
         ),
-      ),
-      Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.person, size: 100, color: Color(0xFF1E3984)),
-            SizedBox(height: 20),
-            Text(
-              'Perfil',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1E3984),
-              ),
-            ),
-          ],
-        ),
-      ),
+      ), */
     ];
 
     return PopScope(
@@ -87,30 +77,60 @@ class _MainAdminState extends State<MainAdmin> {
         ),
         bottomNavigationBar: NavigationBarTheme(
           data: NavigationBarThemeData(
-              indicatorColor: AppColors.secondary,
-              backgroundColor: AppColors.primary,
-              labelTextStyle:
-                  WidgetStateProperty.all(TextStyle(color: Colors.white))),
+            indicatorColor: AppColors.secondary,
+            backgroundColor: AppColors.primary,
+            labelTextStyle:
+                WidgetStateProperty.all(TextStyle(color: Colors.white)),
+          ),
           child: NavigationBar(
             selectedIndex: currentIndex,
             onDestinationSelected: goToPage,
-            indicatorColor: AppColors.secondary,
-            destinations: const [
+            destinations: [
               NavigationDestination(
-                  icon: Icon(
-                    Icons.home_outlined,
-                    color: Colors.white,
-                  ),
-                  selectedIcon: Icon(Icons.home),
-                  label: 'Inicio'),
+                icon: Image.asset(
+                  'assets/home_icon.png',
+                  color: Colors.white,
+                  width: 24,
+                  height: 24,
+                ),
+                selectedIcon: Image.asset(
+                  'assets/home_icon.png',
+                  color: AppColors.primary,
+                  width: 24,
+                  height: 24,
+                ),
+                label: 'Inicio',
+              ),
               NavigationDestination(
-                  icon: Icon(Icons.work_outline, color: Colors.white),
-                  selectedIcon: Icon(Icons.work),
-                  label: 'Ofertas'),
+                icon: Image.asset(
+                  'assets/portfolio_icon.png',
+                  color: Colors.white,
+                  width: 24,
+                  height: 24,
+                ),
+                selectedIcon: Image.asset(
+                  'assets/portfolio_icon.png',
+                  color: AppColors.primary,
+                  width: 24,
+                  height: 24,
+                ),
+                label: 'Ofertas',
+              ),
               NavigationDestination(
-                  icon: Icon(Icons.person_outline, color: Colors.white),
-                  selectedIcon: Icon(Icons.person),
-                  label: 'Perfil'),
+                icon: Image.asset(
+                  'assets/user_icon.png',
+                  color: Colors.white,
+                  width: 24,
+                  height: 24,
+                ),
+                selectedIcon: Image.asset(
+                  'assets/user_icon.png',
+                  color: AppColors.primary,
+                  width: 24,
+                  height: 24,
+                ),
+                label: 'Perfil',
+              ),
             ],
           ),
         ),

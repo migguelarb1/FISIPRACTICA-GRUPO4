@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/utils/session_manager.dart';
-import 'package:flutter_app/features/recruiter/services/chat_header.dart';
 import 'package:flutter_app/features/shared/services/mensajes_services.dart';
+import 'package:flutter_app/features/student/widgets/chat_estudiante_header.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
@@ -16,26 +16,26 @@ enum ConnectionStatus { connecting, connected, disconnected, error }
 
 enum MessageStatus { sending, sent, error }
 
-class ChatReclutadorScreen extends StatefulWidget {
-  final String studentId;
+class ChatEstudianteScreen extends StatefulWidget {
+  final String recruiterId;
   final String jobId;
-  final String studentName;
-  final String? studentAvatar;
+  final String recruiterName;
+  final String? recruiterAvatar;
   final String chatId;
 
-  const ChatReclutadorScreen(
-      {required this.studentId,
+  const ChatEstudianteScreen(
+      {required this.recruiterId,
       required this.jobId,
-      required this.studentName,
+      required this.recruiterName,
       required this.chatId,
-      this.studentAvatar,
+      this.recruiterAvatar,
       super.key});
 
   @override
-  State<ChatReclutadorScreen> createState() => _ChatReclutadorScreenState();
+  State<ChatEstudianteScreen> createState() => _ChatEstudianteScreenState();
 }
 
-class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
+class _ChatEstudianteScreenState extends State<ChatEstudianteScreen> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
@@ -52,7 +52,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
   bool socketInitialized = false;
   ConnectionStatus connectionStatus = ConnectionStatus.disconnected;
 
-  String event = 'recruiter-message';
+  String event = 'student-message';
   String chatId = '';
   Timer? reconnectTimer;
 
@@ -107,10 +107,9 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
       setState(() {
         // Ordenar mensajes por fecha, más antiguos primero
         messages =
-                fetchedMensajes /* 
+            fetchedMensajes; /* 
           ..sort((a, b) =>
-              DateTime.parse(a['fecha']).compareTo(DateTime.parse(b['fecha']))) */
-            ;
+              DateTime.parse(a['fecha']).compareTo(DateTime.parse(b['fecha']))); */
       });
 
       // Scroll al último mensaje
@@ -138,7 +137,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
         'reconnectionAttempts': maxReconnectAttempts,
         'query': {
           'from': user['sub'],
-          'to': widget.studentId,
+          'to': widget.recruiterId,
           'chat_id': chatId,
           'job_id': widget.jobId,
         },
@@ -246,7 +245,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
     try {
       final newMessage = {
         'from': user['sub'],
-        'to': widget.studentId,
+        'to': widget.recruiterId,
         'chat_id': chatId,
         'job_id': widget.jobId,
         'mensaje': message,
@@ -368,9 +367,9 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(70),
-        child: ChatHeader(
-          studentAvatar: widget.studentAvatar,
-          studentName: widget.studentName,
+        child: ChatEstudianteHeader(
+          recruiterAvatar: widget.recruiterAvatar,
+          recruiterName: widget.recruiterName,
           connectionStatus: connectionStatus,
         ),
       ),
@@ -515,7 +514,7 @@ class _ChatReclutadorScreenState extends State<ChatReclutadorScreen> {
       case ConnectionStatus.disconnected:
         backgroundColor = Colors.red;
         message = isReconnecting
-            ? 'Intentando reconectar... (Intento ${reconnectAttempts}/$maxReconnectAttempts)'
+            ? 'Intentando reconectar... (Intento $reconnectAttempts/$maxReconnectAttempts)'
             : 'Desconectado';
         icon = isReconnecting
             ? const SizedBox(

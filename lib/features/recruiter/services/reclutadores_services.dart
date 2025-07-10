@@ -50,15 +50,18 @@ class ReclutadoresServices {
     }
   }
 
-  static Future<Map<String, dynamic>> getReclutadorByUserId(int id) async {
+  static Future<Map<String, dynamic>> getReclutadorByUserId(String id) async {
     try {
-      List<Map<String, dynamic>> reclutadores = await getReclutadores();
-      for (var reclutador in reclutadores) {
-        if (reclutador['user_id'] == id) {
-          return reclutador;
-        }
-      }
-      throw Exception('Reclutador not found');
+      String? token = await SessionManager().getAuthToken();
+      Response response = await dio.get(
+        '/recruiter/$id',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+      return response.data;
     } catch (e) {
       logger.e(e);
       rethrow;
@@ -121,7 +124,7 @@ class ReclutadoresServices {
       String? token = await SessionManager().getAuthToken();
 
       // Crear el cuerpo de la solicitud según el DTO
-      Map<String, dynamic> body = {
+      /* Map<String, dynamic> body = {
         "title": vacante["titulo"], // Cambiar los nombres según el DTO
         "location": vacante["ubicacion"],
         "description": vacante["descripcion"],
@@ -131,7 +134,7 @@ class ReclutadoresServices {
         "job_functions": vacante["funciones_trabajo"], // Si lo tienes
         "company_id": vacante["empresa_id"], // Cambiar si es diferente
         "user_creator_id": vacante["user_creator_id"],
-      };
+      }; */
 
       // Realizamos la solicitud POST
       Response response = await dio.post(
@@ -142,7 +145,7 @@ class ReclutadoresServices {
             'Content-Type': 'application/json',
           },
         ),
-        data: body,
+        data: vacante,
       );
 
       return response.statusCode ==
