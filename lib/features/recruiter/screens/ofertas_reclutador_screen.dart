@@ -22,9 +22,11 @@ class _OfertasReclutadorScreenState extends State<OfertasReclutadorScreen> {
     _loadVacantes();
   }
 
+  final SessionManager _sessionManager = SessionManager();
+
   Future<void> _loadVacantes() async {
     try {
-      Map<String, dynamic> user = await SessionManager().getUser();
+      Map<String, dynamic> user = await _sessionManager.getUser();
       List<Map<String, dynamic>> data =
           await OfertasServices.getOfertasByRecruiter(
               user['recruiter_id'].toString());
@@ -70,12 +72,14 @@ class _OfertasReclutadorScreenState extends State<OfertasReclutadorScreen> {
                                 Row(
                                   children: [
                                     CircleAvatar(
-                                      backgroundColor: Colors.blue,
+                                      backgroundImage: AssetImage(
+                                          'assets/${vacante["empresa"].toLowerCase()}.png'),
+                                      /* backgroundColor: Colors.blue,
                                       child: Text(
                                         vacante["empresa"]?[0] ?? '?',
                                         style: const TextStyle(
                                             color: Colors.white),
-                                      ),
+                                      ), */
                                     ),
                                     const SizedBox(width: 10),
                                     Column(

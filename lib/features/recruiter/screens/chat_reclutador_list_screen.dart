@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/constants/constants.dart';
 import 'package:flutter_app/core/utils/session_manager.dart';
-import 'package:flutter_app/features/shared/widgets/header.dart';
-import 'package:flutter_app/features/shared/services/mensajes_services.dart';
 import 'package:flutter_app/features/recruiter/screens/chat_reclutador_screen.dart';
+import 'package:flutter_app/features/shared/services/mensajes_services.dart';
+import 'package:flutter_app/features/shared/widgets/header.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 
 final logger = Logger();
 
-class ChatListScreen extends StatefulWidget {
-  const ChatListScreen({super.key});
+class ChatReclutadorListScreen extends StatefulWidget {
+  const ChatReclutadorListScreen({super.key});
 
   @override
-  State<ChatListScreen> createState() => _ChatListScreenState();
+  State<ChatReclutadorListScreen> createState() =>
+      _ChatReclutadorListScreenState();
 }
 
-class _ChatListScreenState extends State<ChatListScreen> {
+class _ChatReclutadorListScreenState extends State<ChatReclutadorListScreen> {
   List<Map<String, dynamic>> chats = [];
   List<Map<String, dynamic>> filteredChats = [];
   bool isLoading = true;
@@ -50,7 +51,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
       final recruiterId = user!['sub'];
 
       final fetchedChats = await MensajesServices.getChats(
-        recruiterId: recruiterId.toString(),
+        userId: recruiterId.toString(),
         type: 'Reclutador',
       );
 

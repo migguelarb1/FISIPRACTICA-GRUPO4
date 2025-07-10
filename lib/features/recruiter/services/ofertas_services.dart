@@ -38,7 +38,7 @@ class OfertasServices {
           "hiring": oferta['hiring'],
           "create_date": oferta['create_date'],
           "update_date": oferta['update_date'],
-          "recruiter_id": oferta['recruiter']['id'],
+          "recruiter": oferta['recruiter'],
         });
       }
       return ofertas;
@@ -81,7 +81,7 @@ class OfertasServices {
           "hiring": oferta['hiring'],
           "create_date": oferta['create_date'],
           "update_date": oferta['update_date'],
-          "recruiter_id": oferta['recruiter']['id'],
+          "recruiter": oferta['recruiter'],
         });
       }
       return ofertas;

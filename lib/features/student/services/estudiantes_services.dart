@@ -1,13 +1,13 @@
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_app/features/auth/services/user_services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_app/core/utils/dio.dart';
+import 'package:flutter_app/core/utils/session_manager.dart';
 import 'package:logger/logger.dart';
 
 final logger = Logger();
 
-final dio = Dio();
+final SessionManager _sessionManager = SessionManager();
 
 class EstudiantesServices {
   static Future<Map<String, dynamic>> registerEstudiante(body) async {
@@ -16,9 +16,9 @@ class EstudiantesServices {
       final password = body['password'];
       final firstName = body['apellidos'];
       final lastName = body['nombres'];
-      String? token = await UserServices.getToken();
+      String? token = await _sessionManager.getAuthToken();
       Response response = await dio.post(
-        '${dotenv.env['API_DOMAIN']}/student',
+        '/student',
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',
@@ -61,9 +61,9 @@ class EstudiantesServices {
 
   static Future<List<Map<String, dynamic>>> getEstudiantes() async {
     try {
-      String? token = await UserServices.getToken();
+      String? token = await _sessionManager.getAuthToken();
       Response response = await dio.get(
-        '${dotenv.env['API_DOMAIN']}/student',
+        '/student',
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',

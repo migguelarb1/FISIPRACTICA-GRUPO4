@@ -136,7 +136,7 @@ class ReclutadoresScreenState extends State<ReclutadoresScreen> {
           Container(
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              color: Color(0xFF1E3984).withValues(alpha: 0.1),
+              color: Color(0xFF1E3984).withOpacity(0.1),
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
             ),
             child: Row(
@@ -162,7 +162,15 @@ class ReclutadoresScreenState extends State<ReclutadoresScreen> {
               itemCount: reclutadores.length,
               itemBuilder: (context, index) {
                 return ReclutadorCard(
-                    reclutador: reclutadores[index], index: index);
+                  reclutador: reclutadores[index],
+                  index: index,
+                  onUpdate: (nuevoReclutador) {
+                    setState(() {
+                      reclutadores[index] =
+                          Map<String, String>.from(nuevoReclutador);
+                    });
+                  },
+                );
               },
             ),
           ),

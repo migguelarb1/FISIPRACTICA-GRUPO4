@@ -107,13 +107,13 @@ class _MainReclutadoresState extends State<MainReclutadores> {
               ),
               NavigationDestination(
                 icon: Image.asset(
-                  'assets/chatbot_icon.png',
+                  'assets/chat_icon.png',
                   color: Colors.white,
                   width: 24,
                   height: 24,
                 ),
                 selectedIcon: Image.asset(
-                  'assets/chatbot_icon.png',
+                  'assets/chat_icon.png',
                   color: AppColors.primary,
                   width: 24,
                   height: 24,
