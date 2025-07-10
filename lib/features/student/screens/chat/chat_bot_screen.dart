@@ -448,12 +448,8 @@ Puedes hacer clic en el botón "Comunicarme con un reclutador" que aparece debaj
       socket.disconnect();
     }
     final userData = await _sessionManager.getUser();
-    final chat = await ChatServices().createChat(
-        int.parse(userData['sub']),
-        int.parse(widget.jobId),
-        widget.recruiter['user']['id'] != null
-            ? int.parse(widget.recruiter['user']['id'])
-            : null);
+    final chat = await ChatServices().createChat(userData['sub'],
+        int.parse(widget.jobId), widget.recruiter['user']['id']);
     if (chat.isEmpty) {
       _showErrorSnackBar('Error al crear el chat');
       return;
@@ -463,7 +459,7 @@ Puedes hacer clic en el botón "Comunicarme con un reclutador" que aparece debaj
       context,
       MaterialPageRoute(
         builder: (context) => ChatEstudianteScreen(
-          recruiterId: widget.recruiter['user']['id'],
+          recruiterId: widget.recruiter['user']['id'].toString(),
           jobId: widget.jobId,
           recruiterName:
               '${widget.recruiter['user']['first_name']} ${widget.recruiter['user']['last_name']}',
