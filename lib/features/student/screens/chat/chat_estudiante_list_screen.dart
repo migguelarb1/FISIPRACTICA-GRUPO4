@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/constants/constants.dart';
 import 'package:flutter_app/core/utils/session_manager.dart';
-import 'package:flutter_app/features/shared/widgets/header.dart';
 import 'package:flutter_app/features/shared/services/mensajes_services.dart';
-import 'package:flutter_app/features/recruiter/screens/chat_reclutador_screen.dart';
+import 'package:flutter_app/features/shared/widgets/header.dart';
+import 'package:flutter_app/features/student/screens/chat/chat_estudiante_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 
 final logger = Logger();
 
-class ChatListScreen extends StatefulWidget {
-  const ChatListScreen({super.key});
+class ChatEstudianteListScreen extends StatefulWidget {
+  const ChatEstudianteListScreen({super.key});
 
   @override
-  State<ChatListScreen> createState() => _ChatListScreenState();
+  State<ChatEstudianteListScreen> createState() =>
+      _ChatEstudianteListScreenState();
 }
 
-class _ChatListScreenState extends State<ChatListScreen> {
+class _ChatEstudianteListScreenState extends State<ChatEstudianteListScreen> {
   List<Map<String, dynamic>> chats = [];
   List<Map<String, dynamic>> filteredChats = [];
   bool isLoading = true;
@@ -47,11 +48,11 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
       // Obtener chats del reclutador
       // Por ahora usamos valores de ejemplo, pero deberías obtenerlos del contexto
-      final recruiterId = user!['recruiter_id'];
+      final recruiterId = user!['sub'];
 
       final fetchedChats = await MensajesServices.getChats(
-        recruiterId: recruiterId.toString(),
-        type: 'recruiter',
+        userId: recruiterId.toString(),
+        type: 'Estudiante',
       );
 
       // Enriquecer los chats con información adicional
@@ -99,7 +100,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
       } else {
         filteredChats = chats.where((chat) {
           final studentName = chat['student']['name']?.toLowerCase() ?? '';
-          final jobTitle = chat['job']['title']?.toLowerCase() ?? '';
+          final jobTitle =
+              chat['job_id']; /* ']['title']?.toLowerCase() ?? ''; */
           final lastMessage = chat['lastMessage']?.toLowerCase() ?? '';
           final query = searchQuery.toLowerCase();
 
@@ -132,11 +134,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ChatReclutadorScreen(
-          studentId: chat['student']['id'].toString(),
-          jobId: chat['job']['id'].toString(),
-          studentName: chat['student']['name'] ?? 'Estudiante',
-          studentAvatar: chat['student']['avatar'],
+        builder: (context) => ChatEstudianteScreen(
+          recruiterId: chat['recruiter']['id'].toString(),
+          jobId: chat['job_id'].toString() /* ']['id'].toString() */,
+          recruiterName:
+              '${chat['recruiter']['first_name']} ${chat['recruiter']['last_name']}',
+          recruiterAvatar: chat['recruiter']['avatar'],
           chatId: chat['id'].toString(),
         ),
       ),
@@ -388,8 +391,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 
   Widget _buildChatItem(Map<String, dynamic> chat) {
-    final student = chat['student'];
-    final job = chat['job'];
+    final recruiter = chat['recruiter'];
+    final job = chat['job_id'];
     final lastMessage = chat['lastMessage'] as String?;
     final lastMessageTime = chat['lastMessageTime'] as String?;
     final unreadCount = chat['unreadCount'] as int? ?? 0;
@@ -413,10 +416,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   CircleAvatar(
                     radius: 30,
                     backgroundColor: AppColors.secondary,
-                    backgroundImage: student['avatar'] != null
-                        ? NetworkImage(student['avatar'])
+                    backgroundImage: recruiter['avatar'] != null
+                        ? NetworkImage(recruiter['avatar'])
                         : null,
-                    child: student['avatar'] == null
+                    child: recruiter['avatar'] == null
                         ? Icon(
                             Icons.person,
                             size: 30,
@@ -458,7 +461,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         // Nombre del estudiante
                         Expanded(
                           child: Text(
-                            student['name'] ?? 'Estudiante',
+                            '${recruiter['first_name']} ${recruiter['last_name']}',
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -484,7 +487,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
                     // Información del trabajo
                     Text(
-                      job['title'] ?? 'Oferta de trabajo',
+                      job.toString() /* ['title'] ?? 'Oferta de trabajo' */,
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],

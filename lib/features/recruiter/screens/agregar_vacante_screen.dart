@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/core/routes/routes.dart';
+import 'package:flutter_app/core/constants/constants.dart';
 import 'package:flutter_app/core/utils/session_manager.dart';
 import 'package:flutter_app/features/recruiter/services/reclutadores_services.dart';
 import 'package:flutter_app/features/shared/widgets/header.dart';
@@ -28,6 +30,8 @@ class _AgregarVacanteReclutadorScreenState
 
   bool _isLoading = false;
 
+  final SessionManager _sessionManager = SessionManager();
+
   Future<void> _guardarVacante() async {
     if (_nombreController.text.isEmpty ||
         _sedeController.text.isEmpty ||
@@ -44,7 +48,7 @@ class _AgregarVacanteReclutadorScreenState
       _isLoading = true;
     });
 
-    String? userId = (await SessionManager().getUser())['sub'];
+    String? userId = (await _sessionManager.getUser())['sub'].toString();
     if (userId == null) {
       _mostrarError("No se pudo obtener el ID del reclutador");
       setState(() {
@@ -52,7 +56,7 @@ class _AgregarVacanteReclutadorScreenState
       });
       return;
     }
-
+/* 
     late int userIdInt;
     try {
       userIdInt = int.parse(userId);
@@ -62,21 +66,29 @@ class _AgregarVacanteReclutadorScreenState
         _isLoading = false;
       });
       return;
+    } */
+    Map<String, dynamic> reclutador;
+    try {
+      reclutador = await ReclutadoresServices.getReclutadorByUserId(userId);
+    } catch (e) {
+      _mostrarError("No se pudo obtener el reclutador");
+      setState(() {
+        _isLoading = false;
+      });
+      return;
     }
-    Map<String, dynamic> reclutador =
-        await ReclutadoresServices.getReclutadorByUserId(userIdInt);
 
     Map<String, dynamic> nuevaVacante = {
-      "titulo": _nombreController.text,
-      "ubicacion": _sedeController.text,
-      "descripcion": _descripcionController.text,
-      "salario": _salarioController.text, // Asegúrate de tener este campo
+      "title": _nombreController.text,
+      "location": _sedeController.text,
+      "description": _descripcionController.text,
+      "salary": _salarioController.text, // Asegúrate de tener este campo
       "url_job_pdf": _urlJobPdfController.text, // Asegúrate de tener este campo
-      "requisitos": _conocimientosController.text,
-      "funciones_trabajo":
+      "job_requirements": _conocimientosController.text,
+      "job_functions":
           _requisitosController.text, // Asegúrate de tener este campo
-      "empresa_id": reclutador['empresa_id'], // Añade el ID de la empresa
-      "user_creator_id": userIdInt
+      "company_id": reclutador['company']['id'], // Añade el ID de la empresa
+      "recruiter_creator_id": reclutador['id']
     };
 
     bool success = await ReclutadoresServices.registrarVacante(nuevaVacante);
@@ -96,6 +108,7 @@ class _AgregarVacanteReclutadorScreenState
   void _mostrarDialogoGuardado() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("Éxito"),
@@ -103,17 +116,21 @@ class _AgregarVacanteReclutadorScreenState
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pushReplacementNamed('/lista_vacantes');
+                Navigator.of(context).pop(); // Cerrar el diálogo
               },
               style: TextButton.styleFrom(backgroundColor: Colors.blue),
-              child: const Text("Ir a lista de vacantes",
+              child: const Text("Volver a la lista de vacantes",
                   style: TextStyle(color: Colors.white)),
             ),
           ],
         );
       },
-    );
+    ).then((_) {
+      // Cuando el diálogo se cierra, volver a la página anterior
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    });
   }
 
   void _mostrarError(String mensaje) {
@@ -141,7 +158,7 @@ class _AgregarVacanteReclutadorScreenState
         preferredSize: const Size.fromHeight(60.0),
         child: Header(),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,8 +188,10 @@ class _AgregarVacanteReclutadorScreenState
                     style:
                         ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                     onPressed: _guardarVacante,
-                    child: const Text("Guardar",
-                        style: TextStyle(color: Colors.white)),
+                    child: const Text(
+                      "Guardar",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ],
               ),
@@ -190,7 +209,7 @@ class _AgregarVacanteReclutadorScreenState
         decoration: InputDecoration(
           labelText: label,
           filled: true,
-          fillColor: Colors.blue.shade100,
+          fillColor: AppColors.secondary,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
         ),
       ),
