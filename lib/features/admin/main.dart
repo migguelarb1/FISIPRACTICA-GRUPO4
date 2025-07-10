@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/core/core.dart';
 import 'package:flutter_app/features/admin/navigation/navigation.dart';
+import 'package:flutter_app/features/admin/screens/offers/admin_ofertas_screen.dart';
 import 'package:flutter_app/features/admin/screens/screens.dart';
 
 class MainAdmin extends StatefulWidget {
@@ -22,6 +23,8 @@ class _MainAdminState extends State<MainAdmin> {
 
   final List<GlobalKey<NavigatorState>> _navigatorKeys = [
     homeNavigatorKey,
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
   ];
 
   Future<void> _systemBackButtonPressed(result) async {
@@ -36,7 +39,10 @@ class _MainAdminState extends State<MainAdmin> {
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       HomeNav(),
-      Center(
+      EditarOfertasScreen(),
+      // EditarAdminScreen(),
+      AdminProfileScreen(), // 👈 PERFIL ACTIVO
+      /* Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -52,8 +58,7 @@ class _MainAdminState extends State<MainAdmin> {
             ),
           ],
         ),
-      ),
-      AdminProfileScreen(), // 👈 PERFIL ACTIVO
+      ), */
     ];
 
     return PopScope(

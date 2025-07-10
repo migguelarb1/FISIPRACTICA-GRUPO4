@@ -5,6 +5,7 @@ import 'package:flutter_app/core/utils/session_manager.dart';
 import 'package:flutter_app/features/student/screens/chat/chat_bot_screen.dart';
 import 'package:flutter_app/features/student/services/chat_services.dart';
 import 'package:flutter_app/features/student/services/postulaciones_services.dart';
+import 'package:flutter_app/features/student/main_estudiantes.dart';
 
 final SessionManager _sessionManager = SessionManager();
 
@@ -109,7 +110,9 @@ class DetallePuestoTab extends StatelessWidget {
       );
       return;
     }
-    Navigator.push(
+    
+    // Navegar al ChatBotScreen y esperar el resultado
+    final result = await Navigator.push<Map<String, dynamic>>(
       context,
       MaterialPageRoute(
         builder: (context) => ChatBotScreen(
@@ -120,6 +123,22 @@ class DetallePuestoTab extends StatelessWidget {
         ),
       ),
     );
+    
+    // Si el resultado indica que se debe navegar al chat
+    if (result != null && result['goToChat'] == true) {
+      final chatInfo = <String, String>{
+        'recruiterId': result['recruiterId']!.toString(),
+        'jobId': result['jobId']!.toString(),
+        'recruiterName': result['recruiterName']!.toString(),
+        'chatId': result['chatId']!.toString(),
+      };
+      
+      // Verificar que el context sigue siendo válido
+      if (context.mounted) {
+        // Usar el método estático para cambiar la pestaña y navegar al chat
+        MainEstudiantes.changeTabAndNavigateToChat(context, chatInfo);
+      }
+    }
   }
 
   Widget _buildContactButton(BuildContext context) {

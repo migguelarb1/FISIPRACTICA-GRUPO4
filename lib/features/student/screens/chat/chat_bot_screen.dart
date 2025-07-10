@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/utils/session_manager.dart';
 import 'package:flutter_app/features/shared/services/mensajes_services.dart';
-import 'package:flutter_app/features/student/screens/chat/chat_estudiante_screen.dart';
 import 'package:flutter_app/features/student/services/chat_services.dart';
 import 'package:flutter_app/features/student/widgets/chat_bot_header.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -305,7 +304,7 @@ Estoy aquí para ayudarte con información sobre el proceso de selección en ${w
       setState(() {
         isTyping = false;
         // Agregar al final para reverse: true
-        messages.add({
+        messages.insert(0, {
           'mensaje': data,
           'fecha': DateTime.now().toIso8601String(),
           'is_me': false,
@@ -363,7 +362,7 @@ Estoy aquí para ayudarte con información sobre el proceso de selección en ${w
 
       setState(() {
         // Agregar al final para reverse: true
-        messages.add(messageWithStatus);
+        messages.insert(0, messageWithStatus);
         _controller.clear();
         isTyping = true;
       });
@@ -448,29 +447,25 @@ Puedes hacer clic en el botón "Comunicarme con un reclutador" que aparece debaj
       socket.disconnect();
     }
     final userData = await _sessionManager.getUser();
-    final chat = await ChatServices().createChat(
-        int.parse(userData['sub']),
-        int.parse(widget.jobId),
-        widget.recruiter['user']['id'] != null
-            ? int.parse(widget.recruiter['user']['id'])
-            : null);
+    final chat = await ChatServices().createChat(userData['sub'],
+        int.parse(widget.jobId), widget.recruiter['user']['id']);
     if (chat.isEmpty) {
       _showErrorSnackBar('Error al crear el chat');
       return;
     }
     if (!context.mounted) return;
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChatEstudianteScreen(
-          recruiterId: widget.recruiter['user']['id'],
-          jobId: widget.jobId,
-          recruiterName:
-              '${widget.recruiter['user']['first_name']} ${widget.recruiter['user']['last_name']}',
-          chatId: chat['id'].toString(),
-        ),
-      ),
-    );
+    
+    // Información del chat para retornar al widget padre
+    final chatInfo = {
+      'recruiterId': widget.recruiter['user']['id'].toString(),
+      'jobId': widget.jobId,
+      'recruiterName': '${widget.recruiter['user']['first_name']} ${widget.recruiter['user']['last_name']}',
+      'chatId': chat['id'].toString(),
+      'goToChat': true, // Flag para indicar que se debe navegar al chat
+    };
+    
+    // Retornar al widget padre con la información del chat
+    Navigator.pop(context, chatInfo);
   }
 
   @override
@@ -500,7 +495,7 @@ Puedes hacer clic en el botón "Comunicarme con un reclutador" que aparece debaj
               floatingHeader: true,
               elements: messages,
               groupBy: (element) {
-                DateTime date = DateTime.parse(element['fecha']);
+                DateTime date = DateTime.parse(element['fecha']).toLocal();
                 return "${date.year}/${date.month}/${date.day}";
               },
               groupHeaderBuilder: (element) => SizedBox(
@@ -512,7 +507,7 @@ Puedes hacer clic en el botón "Comunicarme con un reclutador" que aparece debaj
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         DateFormat('d MMM y')
-                            .format(DateTime.parse(element['fecha'])),
+                            .format(DateTime.parse(element['fecha']).toLocal()),
                         style: const TextStyle(color: Colors.white),
                       ),
                     ),
@@ -523,9 +518,9 @@ Puedes hacer clic en el botón "Comunicarme con un reclutador" que aparece debaj
                 return Column(
                   children: [
                     _buildMessage(element),
-                    if (element['showOptions'] == true && !element['is_me'])
+                    if (!element['is_me'] && messages.first == element)
                       _buildOptions(),
-                    if (isTyping && messages.last == element)
+                    if (isTyping && messages.first == element)
                       _buildTypingIndicator(),
                   ],
                 );
@@ -603,7 +598,8 @@ Puedes hacer clic en el botón "Comunicarme con un reclutador" que aparece debaj
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  DateFormat('HH:mm').format(DateTime.parse(message['fecha'])),
+                  DateFormat('HH:mm')
+                      .format(DateTime.parse(message['fecha']).toLocal()),
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey[600],
