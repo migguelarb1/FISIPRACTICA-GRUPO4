@@ -1,64 +1,89 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/features/student/services/postulaciones_services.dart';
 
 class DetallePuestoTab extends StatelessWidget {
   final Map<String, dynamic>? oferta;
   const DetallePuestoTab({super.key, this.oferta});
+
+  void onPressed(BuildContext context) async {
+    bool success = await PostulacionesServices.postularse(oferta!["id"]);
+
+    if (!context.mounted) return;
+
+    if (success) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.check_circle,
+                  color: Color(0xFF1E3984),
+                  size: 70,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  '¡Postulación exitosa!',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1E3984),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Tu postulación ha sido enviada correctamente.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF1E3984),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Text('Aceptar'),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Error"),
+            content: const Text('Error al postularse'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Cerrar"),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
 
   Widget _buildPostularButton(BuildContext context) {
     return Center(
       child: SizedBox(
         width: 200,
         child: ElevatedButton(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.check_circle,
-                        color: Color(0xFF1E3984),
-                        size: 70,
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        '¡Postulación exitosa!',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1E3984),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Tu postulación ha sido enviada correctamente.',
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1E3984),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: const Text('Aceptar'),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            );
-          },
+          onPressed: () => onPressed(context),
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF1E3984),
             foregroundColor: Colors.white,

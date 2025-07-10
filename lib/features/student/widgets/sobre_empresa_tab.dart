@@ -86,8 +86,8 @@ class SobreEmpresaTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Acerca de nosotros",
+          Text(
+            oferta!["empresa"].toString(),
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
