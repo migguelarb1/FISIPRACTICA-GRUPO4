@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/utils/session_manager.dart';
 import 'package:flutter_app/features/shared/services/mensajes_services.dart';
 import 'package:flutter_app/features/student/screens/chat/chat_estudiante_screen.dart';
+import 'package:flutter_app/features/student/services/chat_services.dart';
+import 'package:flutter_app/features/student/widgets/chat_bot_header.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
@@ -18,11 +22,13 @@ class ChatBotScreen extends StatefulWidget {
   final String company;
   final String chatId;
   final String jobId;
+  final Map<String, dynamic> recruiter;
 
   const ChatBotScreen({
     required this.company,
     required this.chatId,
     required this.jobId,
+    required this.recruiter,
     super.key,
   });
 
@@ -61,15 +67,21 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
   ];
 
   List<Map<String, dynamic>> messages = [];
+  String chatId = '';
+  String event = 'message';
   Map<String, dynamic> user = {};
   bool isLoading = true;
   bool isSending = false;
   bool isTyping = false;
   late IO.Socket socket;
+  bool socketInitialized = false;
   ConnectionStatus connectionStatus = ConnectionStatus.disconnected;
-
+  bool isReconnecting = false;
+  int reconnectAttempts = 0;
+  Timer? reconnectTimer;
   // Agregar variable para trackear el usuario actual
   String? currentUserId;
+  static const int maxReconnectAttempts = 5;
 
   @override
   void initState() {
@@ -110,15 +122,20 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
 
   void _disconnectSocket() {
     try {
-      socket.off('message');
-      socket.off('typing');
-      socket.off('stop_typing');
-      socket.offAny();
+      if (socketInitialized) {
+        // Marcar como no inicializado primero para evitar setState() en listeners
+        socketInitialized = false;
 
-      if (socket.connected) {
-        socket.disconnect();
+        // Remover todos los listeners
+        socket.off(event);
+        socket.offAny();
+        socket.clearListeners();
+
+        if (socket.connected) {
+          socket.disconnect();
+        }
+        socket.dispose();
       }
-      socket.dispose();
     } catch (e) {
       logger.e('Error al desconectar socket: $e');
     }
@@ -127,35 +144,37 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
   Future<void> _initializeChat() async {
     if (!mounted) return;
 
-    setState(() => isLoading = true);
+    setState(() {
+      isLoading = true;
+      connectionStatus = ConnectionStatus.connecting;
+    });
 
     try {
       // Obtener información del usuario
       final userData = await _sessionManager.getUser();
       if (!mounted) return;
-
+      setState(() {
+        user = userData;
+        chatId = widget.chatId;
+      });
+      // Inicializar socket
+      await _initializeSocket();
+      // Cargar mensajes históricos
+      await _fetchMensajes();
       setState(() {
         currentUserId = userData['sub'].toString();
         user = userData;
-        messages = [
-          {
-            'mensaje': '''¡Hola! Soy el asistente virtual de FISIPRACTICA 👋
+        messages.add({
+          'mensaje': '''¡Hola! Soy el asistente virtual de FISIPRACTICA 👋
 
 Estoy aquí para ayudarte con información sobre el proceso de selección en ${widget.company}. 
 
 ¿En qué puedo ayudarte hoy?''',
-            'fecha': DateTime.now().toIso8601String(),
-            'is_me': false,
-            'showOptions': true,
-          }
-        ];
+          'fecha': DateTime.now().toIso8601String(),
+          'is_me': false,
+          'showOptions': true,
+        });
       });
-
-      // Inicializar socket
-      _initializeSocket();
-
-      // Cargar mensajes históricos
-      await _fetchMensajes();
     } catch (e) {
       logger.e('Error al inicializar el chat: $e');
       if (mounted) {
@@ -173,25 +192,31 @@ Estoy aquí para ayudarte con información sobre el proceso de selección en ${w
 
     try {
       final fetchedMensajes =
-          await MensajesServices.getMensajes(int.parse(widget.chatId));
+          await MensajesServices.getMensajes(int.parse(chatId));
 
       if (!mounted) return;
 
       setState(() {
         // Ordenar mensajes por fecha, más antiguos primero
-        final sortedMessages = fetchedMensajes
+        /* final sortedMessages =
+            fetchedMensajes; /* 
           ..sort((a, b) =>
-              DateTime.parse(a['fecha']).compareTo(DateTime.parse(b['fecha'])));
+              DateTime.parse(a['fecha']).compareTo(DateTime.parse(b['fecha']))); */
 
         // Filtrar mensajes duplicados y mantener orden cronológico
         messages = [
           ...sortedMessages.where((msg) => !messages.any((existingMsg) =>
               existingMsg['id']?.toString() == msg['id']?.toString())),
-          messages.first, // Mensaje de bienvenida al final para reverse: true
-        ];
+          messages.first, */
+        messages =
+            fetchedMensajes; // Mensaje de bienvenida al final para reverse: true
+        //];
       });
 
-      _scrollToBottom();
+      // Scroll al último mensaje
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToBottom();
+      });
     } catch (e) {
       logger.e('Error al obtener mensajes: $e');
       if (mounted) {
@@ -200,7 +225,7 @@ Estoy aquí para ayudarte con información sobre el proceso de selección en ${w
     }
   }
 
-  void _initializeSocket() {
+  Future<void> _initializeSocket() async {
     try {
       setState(() => connectionStatus = ConnectionStatus.connecting);
 
@@ -211,7 +236,7 @@ Estoy aquí para ayudarte con información sobre el proceso de selección en ${w
           'autoConnect': true,
           'query': {
             'from': currentUserId,
-            'chat_id': widget.chatId,
+            'chat_id': chatId,
             'job_id': widget.jobId,
             'company': widget.company,
           },
@@ -219,6 +244,7 @@ Estoy aquí para ayudarte con información sobre el proceso de selección en ${w
         },
       );
 
+      socketInitialized = true;
       _setupSocketListeners();
     } catch (e) {
       logger.e('Error al inicializar socket: $e');
@@ -231,24 +257,36 @@ Estoy aquí para ayudarte con información sobre el proceso de selección en ${w
 
   void _setupSocketListeners() {
     socket.onConnect((_) {
-      if (!mounted) return;
-      setState(() => connectionStatus = ConnectionStatus.connected);
+      if (!mounted || !socketInitialized) return;
+      setState(() {
+        connectionStatus = ConnectionStatus.connected;
+        isReconnecting = false;
+        reconnectAttempts = 0;
+      });
       logger.i('Socket conectado para usuario: $currentUserId');
     });
 
     socket.onDisconnect((_) {
-      if (!mounted) return;
+      if (!mounted || !socketInitialized) return;
       setState(() {
         connectionStatus = ConnectionStatus.disconnected;
         isTyping = false;
+        if (!isReconnecting && reconnectAttempts < maxReconnectAttempts) {
+          _handleReconnect();
+        }
       });
-      logger.i('Socket desconectado para usuario: $currentUserId');
+      logger.w('Socket desconectado para usuario: $currentUserId');
     });
 
     socket.onConnectError((error) {
       logger.e('Error de conexión socket para usuario $currentUserId: $error');
       if (!mounted) return;
-      setState(() => connectionStatus = ConnectionStatus.error);
+      setState(() {
+        connectionStatus = ConnectionStatus.error;
+        if (!isReconnecting && reconnectAttempts < maxReconnectAttempts) {
+          _handleReconnect();
+        }
+      });
       _showErrorSnackBar('Error de conexión');
     });
 
@@ -262,8 +300,8 @@ Estoy aquí para ayudarte con información sobre el proceso de selección en ${w
       setState(() => isTyping = false);
     });
 
-    socket.on('message', (data) {
-      if (!mounted) return;
+    socket.on(event, (data) {
+      if (!mounted || !socketInitialized) return;
       setState(() {
         isTyping = false;
         // Agregar al final para reverse: true
@@ -280,22 +318,39 @@ Estoy aquí para ayudarte con información sobre el proceso de selección en ${w
 
   @override
   void dispose() {
+    reconnectTimer?.cancel();
     _disconnectSocket();
     _controller.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
+  void _handleReconnect() {
+    if (!mounted || !socketInitialized) return;
+
+    setState(() {
+      isReconnecting = true;
+      reconnectAttempts++;
+    });
+
+    reconnectTimer?.cancel();
+    reconnectTimer = Timer(const Duration(seconds: 3), () async {
+      if (!mounted || !socketInitialized) return;
+      if (connectionStatus != ConnectionStatus.connected) {
+        await _initializeSocket();
+      }
+    });
+  }
+
   Future<void> _sendMessage(String message) async {
-    if (message.trim().isEmpty ||
-        connectionStatus != ConnectionStatus.connected) return;
+    if (message.trim().isEmpty || !mounted || !socketInitialized) return;
 
     setState(() => isSending = true);
 
     try {
       final newMessage = {
         'from': currentUserId,
-        'chat_id': widget.chatId,
+        'chat_id': chatId,
         'job_id': widget.jobId,
         'company': widget.company,
         'mensaje': message,
@@ -310,15 +365,20 @@ Estoy aquí para ayudarte con información sobre el proceso de selección en ${w
         // Agregar al final para reverse: true
         messages.add(messageWithStatus);
         _controller.clear();
-        messageWithStatus['status'] = MessageStatus.sent;
         isTyping = true;
       });
 
       socket.emit('message', newMessage);
+
+      if (!mounted || !socketInitialized) return;
+      setState(() {
+        messageWithStatus['status'] = MessageStatus.sent;
+        isSending = false;
+      });
       _scrollToBottom();
     } catch (e) {
       logger.e('Error al enviar mensaje: $e');
-      if (!mounted) return;
+      if (!mounted || !socketInitialized) return;
       setState(() {
         messages.last['status'] = MessageStatus.error;
         isSending = false;
@@ -366,7 +426,7 @@ Puedes hacer clic en el botón "Comunicarme con un reclutador" que aparece debaj
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
+        _scrollController.position.minScrollExtent,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
@@ -374,7 +434,7 @@ Puedes hacer clic en el botón "Comunicarme con un reclutador" que aparece debaj
   }
 
   void _showErrorSnackBar(String message) {
-    if (!mounted) return;
+    if (!mounted || !socketInitialized) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -383,18 +443,31 @@ Puedes hacer clic en el botón "Comunicarme con un reclutador" que aparece debaj
     );
   }
 
-  void _goToChat() {
+  void _goToChat(BuildContext context) async {
     if (socket.connected) {
       socket.disconnect();
     }
+    final userData = await _sessionManager.getUser();
+    final chat = await ChatServices().createChat(
+        int.parse(userData['sub']),
+        int.parse(widget.jobId),
+        widget.recruiter['user']['id'] != null
+            ? int.parse(widget.recruiter['user']['id'])
+            : null);
+    if (chat.isEmpty) {
+      _showErrorSnackBar('Error al crear el chat');
+      return;
+    }
+    if (!context.mounted) return;
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const ChatEstudianteScreen(
-          recruiterId: '',
-          jobId: '',
-          recruiterName: '',
-          chatId: '',
+        builder: (context) => ChatEstudianteScreen(
+          recruiterId: widget.recruiter['user']['id'],
+          jobId: widget.jobId,
+          recruiterName:
+              '${widget.recruiter['user']['first_name']} ${widget.recruiter['user']['last_name']}',
+          chatId: chat['id'].toString(),
         ),
       ),
     );
@@ -406,54 +479,62 @@ Puedes hacer clic en el botón "Comunicarme con un reclutador" que aparece debaj
       return const Center(child: CircularProgressIndicator());
     }
 
-    return Column(
-      children: [
-        _buildChatHeader(),
-        _buildConnectionStatus(),
-        Expanded(
-          child: GroupedListView<dynamic, String>(
-            controller: _scrollController,
-            padding: const EdgeInsets.all(8),
-            reverse: false,
-            order: GroupedListOrder.ASC,
-            useStickyGroupSeparators: true,
-            floatingHeader: true,
-            elements: messages,
-            groupBy: (element) {
-              DateTime date = DateTime.parse(element['fecha']);
-              return "${date.year}/${date.month}/${date.day}";
-            },
-            groupHeaderBuilder: (element) => SizedBox(
-              height: 50,
-              child: Center(
-                child: Card(
-                  color: Colors.blue[900],
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      DateFormat('d MMM y')
-                          .format(DateTime.parse(element['fecha'])),
-                      style: const TextStyle(color: Colors.white),
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(70),
+        child: ChatBotHeader(
+          company: widget.company,
+          connectionStatus: connectionStatus,
+        ),
+      ),
+      body: Column(
+        children: [
+          _buildConnectionStatus(),
+          Expanded(
+            child: GroupedListView<dynamic, String>(
+              controller: _scrollController,
+              padding: const EdgeInsets.all(8),
+              reverse: true,
+              order: GroupedListOrder.ASC,
+              useStickyGroupSeparators: true,
+              floatingHeader: true,
+              elements: messages,
+              groupBy: (element) {
+                DateTime date = DateTime.parse(element['fecha']);
+                return "${date.year}/${date.month}/${date.day}";
+              },
+              groupHeaderBuilder: (element) => SizedBox(
+                height: 50,
+                child: Center(
+                  child: Card(
+                    color: Colors.blue[900],
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        DateFormat('d MMM y')
+                            .format(DateTime.parse(element['fecha'])),
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                 ),
               ),
+              itemBuilder: (context, element) {
+                return Column(
+                  children: [
+                    _buildMessage(element),
+                    if (element['showOptions'] == true && !element['is_me'])
+                      _buildOptions(),
+                    if (isTyping && messages.last == element)
+                      _buildTypingIndicator(),
+                  ],
+                );
+              },
             ),
-            itemBuilder: (context, element) {
-              return Column(
-                children: [
-                  _buildMessage(element),
-                  if (element['showOptions'] == true && !element['is_me'])
-                    _buildOptions(),
-                  if (isTyping && messages.last == element)
-                    _buildTypingIndicator(),
-                ],
-              );
-            },
           ),
-        ),
-        _buildMessageInput(),
-      ],
+          _buildMessageInput(),
+        ],
+      ),
     );
   }
 
@@ -567,53 +648,6 @@ Puedes hacer clic en el botón "Comunicarme con un reclutador" que aparece debaj
     }
   }
 
-  Widget _buildChatHeader() {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      color: Colors.blue[900],
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundImage:
-                AssetImage('assets/${widget.company.toLowerCase()}.png'),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.company,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'Asistente Virtual',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Icon(
-            connectionStatus == ConnectionStatus.connected
-                ? Icons.circle
-                : Icons.circle_outlined,
-            color: connectionStatus == ConnectionStatus.connected
-                ? Colors.green
-                : Colors.grey,
-            size: 12,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildOptions() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -624,8 +658,9 @@ Puedes hacer clic en el botón "Comunicarme con un reclutador" que aparece debaj
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 4.0),
             child: ElevatedButton(
-              onPressed:
-                  isAction ? _goToChat : () => _sendMessage(option['text']),
+              onPressed: isAction
+                  ? () => _goToChat(context)
+                  : () => _sendMessage(option['text']),
               style: ElevatedButton.styleFrom(
                 backgroundColor: isAction ? Colors.blue[900] : Colors.white,
                 foregroundColor: isAction ? Colors.white : Colors.black87,
@@ -661,10 +696,12 @@ Puedes hacer clic en el botón "Comunicarme con un reclutador" que aparece debaj
               decoration: InputDecoration(
                 hintText: "Escribe tu pregunta...",
                 border: const OutlineInputBorder(),
-                enabled: connectionStatus == ConnectionStatus.connected,
+                enabled: connectionStatus == ConnectionStatus.connected &&
+                    !isSending,
               ),
               onSubmitted: (text) {
-                if (text.isNotEmpty) {
+                if (text.isNotEmpty &&
+                    connectionStatus == ConnectionStatus.connected) {
                   _sendMessage(text);
                 }
               },

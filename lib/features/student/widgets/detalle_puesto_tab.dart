@@ -1,5 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_app/core/utils/session_manager.dart';
+import 'package:flutter_app/features/student/screens/chat/chat_bot_screen.dart';
+import 'package:flutter_app/features/student/services/chat_services.dart';
 import 'package:flutter_app/features/student/services/postulaciones_services.dart';
+
+final SessionManager _sessionManager = SessionManager();
 
 class DetallePuestoTab extends StatelessWidget {
   final Map<String, dynamic>? oferta;
@@ -76,6 +83,134 @@ class DetallePuestoTab extends StatelessWidget {
         },
       );
     }
+  }
+
+  void onPressedChat(BuildContext context) async {
+    final userData = await _sessionManager.getUser();
+    final chat =
+        await ChatServices().createChat(userData['sub'], oferta!["id"], null);
+
+    if (!context.mounted) return;
+    if (chat.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Error"),
+            content: const Text("Error al crear el chat"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Cerrar"),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatBotScreen(
+          company: oferta!["empresa"],
+          chatId: chat['id'].toString(),
+          jobId: oferta!["id"].toString(),
+          recruiter: oferta!["recruiter"],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContactButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20.0, top: 10.0),
+      child: SizedBox(
+        width: 150,
+        child: ElevatedButton(
+          onPressed: () => onPressedChat(context),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF1E3984),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+          ),
+          child: const Text(
+            'Contactar',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRecruiterInfo(BuildContext context) {
+    Uint8List? photo = oferta!["recruiter"]?["user"]?["photo"];
+    return Card(
+      color: Colors.grey[200],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Card(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    photo != null
+                        ? Image.memory(photo, width: 80, height: 80)
+                        : const Icon(
+                            Icons.person,
+                            size: 80,
+                            color: Color(0xFF1E3984),
+                          ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${oferta!["recruiter"]?["user"]?["first_name"]} ${oferta!["recruiter"]?["user"]?["last_name"]}',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1E3984),
+                          ),
+                        ),
+                        Text(
+                          oferta!["recruiter"]?["description"] ?? '',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF1E3984),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(
+                color: Colors.grey,
+                thickness: 1,
+                height: 1,
+                indent: 10,
+                endIndent: 10,
+              ),
+              _buildContactButton(context),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildPostularButton(BuildContext context) {
@@ -170,7 +305,7 @@ class DetallePuestoTab extends StatelessWidget {
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 20),
-            _buildPostularButton(context),
+            _buildRecruiterInfo(context),
           ],
         ),
       ),

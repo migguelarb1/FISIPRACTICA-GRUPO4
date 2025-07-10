@@ -48,10 +48,10 @@ class _ChatEstudianteListScreenState extends State<ChatEstudianteListScreen> {
 
       // Obtener chats del reclutador
       // Por ahora usamos valores de ejemplo, pero deberías obtenerlos del contexto
-      final recruiterId = user!['sub'];
+      final userId = user!['sub'];
 
       final fetchedChats = await MensajesServices.getChats(
-        userId: recruiterId.toString(),
+        userId: userId.toString(),
         type: 'Estudiante',
       );
 
@@ -139,7 +139,7 @@ class _ChatEstudianteListScreenState extends State<ChatEstudianteListScreen> {
           jobId: chat['job_id'].toString() /* ']['id'].toString() */,
           recruiterName:
               '${chat['recruiter']['first_name']} ${chat['recruiter']['last_name']}',
-          recruiterAvatar: chat['recruiter']['avatar'],
+          recruiterAvatar: chat['recruiter']['photo'],
           chatId: chat['id'].toString(),
         ),
       ),
@@ -416,10 +416,10 @@ class _ChatEstudianteListScreenState extends State<ChatEstudianteListScreen> {
                   CircleAvatar(
                     radius: 30,
                     backgroundColor: AppColors.secondary,
-                    backgroundImage: recruiter['avatar'] != null
-                        ? NetworkImage(recruiter['avatar'])
+                    backgroundImage: recruiter?['photo'] != null
+                        ? NetworkImage(recruiter['photo'])
                         : null,
-                    child: recruiter['avatar'] == null
+                    child: recruiter?['photo'] == null
                         ? Icon(
                             Icons.person,
                             size: 30,

@@ -29,9 +29,9 @@ class MensajesServices {
             'user_id': mensaje['user_id'],
             'fecha': mensaje['create_date'],
             'estudiante_id':
-                mensaje['chat'] != null ? mensaje['chat']['student_id'] : null,
+                mensaje['chat'] != null ? mensaje['chat']['student']['id'] : null,
             'reclutador_id': mensaje['chat'] != null
-                ? mensaje['chat']['recruiter_id']
+                ? mensaje['chat']['recruiter']['id']
                 : null,
             'job_id':
                 mensaje['chat'] != null ? mensaje['chat']['job_id'] : null,

@@ -52,7 +52,7 @@ class _ChatEstudianteScreenState extends State<ChatEstudianteScreen> {
   bool socketInitialized = false;
   ConnectionStatus connectionStatus = ConnectionStatus.disconnected;
 
-  String event = 'recruiter-message';
+  String event = 'student-message';
   String chatId = '';
   Timer? reconnectTimer;
 
@@ -106,9 +106,10 @@ class _ChatEstudianteScreenState extends State<ChatEstudianteScreen> {
 
       setState(() {
         // Ordenar mensajes por fecha, más antiguos primero
-        messages = fetchedMensajes
+        messages =
+            fetchedMensajes; /* 
           ..sort((a, b) =>
-              DateTime.parse(a['fecha']).compareTo(DateTime.parse(b['fecha'])));
+              DateTime.parse(a['fecha']).compareTo(DateTime.parse(b['fecha']))); */
       });
 
       // Scroll al último mensaje
@@ -207,7 +208,7 @@ class _ChatEstudianteScreenState extends State<ChatEstudianteScreen> {
       };
       setState(() {
         // Agregar al final para reverse: true
-        messages.add(receivedMessage);
+        messages.insert(0, receivedMessage);
       });
       _scrollToBottom();
     });
@@ -254,7 +255,7 @@ class _ChatEstudianteScreenState extends State<ChatEstudianteScreen> {
 
       setState(() {
         // Agregar al final para reverse: true
-        messages.add(newMessage);
+        messages.insert(0, newMessage);
         _controller.clear();
       });
 
@@ -284,7 +285,7 @@ class _ChatEstudianteScreenState extends State<ChatEstudianteScreen> {
   void _scrollToBottom() {
     if (_scrollController.hasClients && mounted) {
       _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
+        _scrollController.position.minScrollExtent,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
@@ -379,13 +380,13 @@ class _ChatEstudianteScreenState extends State<ChatEstudianteScreen> {
             child: GroupedListView<dynamic, String>(
               controller: _scrollController,
               padding: const EdgeInsets.all(8),
-              reverse: false,
+              reverse: true,
               order: GroupedListOrder.ASC,
               useStickyGroupSeparators: true,
               floatingHeader: true,
               elements: messages,
               groupBy: (element) {
-                DateTime date = DateTime.parse(element['fecha']);
+                DateTime date = DateTime.parse(element['fecha']).toLocal();
                 return "${date.year}/${date.month}/${date.day}";
               },
               groupHeaderBuilder: (element) => SizedBox(
@@ -397,7 +398,7 @@ class _ChatEstudianteScreenState extends State<ChatEstudianteScreen> {
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         DateFormat('d MMM y')
-                            .format(DateTime.parse(element['fecha'])),
+                            .format(DateTime.parse(element['fecha']).toLocal()),
                         style: const TextStyle(color: Colors.white),
                       ),
                     ),
@@ -435,8 +436,8 @@ class _ChatEstudianteScreenState extends State<ChatEstudianteScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              DateFormat('HH:mm')
-                                  .format(DateTime.parse(element['fecha'])),
+                              DateFormat('HH:mm').format(
+                                  DateTime.parse(element['fecha']).toLocal()),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey[600],
