@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/core/core.dart';
 import 'package:flutter_app/features/admin/navigation/navigation.dart';
+import 'package:flutter_app/features/admin/screens/screens.dart';
 
 class MainAdmin extends StatefulWidget {
   const MainAdmin({super.key});
@@ -52,23 +53,7 @@ class _MainAdminState extends State<MainAdmin> {
           ],
         ),
       ),
-      Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.person, size: 100, color: Color(0xFF1E3984)),
-            SizedBox(height: 20),
-            Text(
-              'Perfil',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1E3984),
-              ),
-            ),
-          ],
-        ),
-      ),
+      AdminProfileScreen(), // 👈 PERFIL ACTIVO
     ];
 
     return PopScope(
@@ -87,14 +72,14 @@ class _MainAdminState extends State<MainAdmin> {
         ),
         bottomNavigationBar: NavigationBarTheme(
           data: NavigationBarThemeData(
-              indicatorColor: AppColors.secondary,
-              backgroundColor: AppColors.primary,
-              labelTextStyle:
-                  WidgetStateProperty.all(TextStyle(color: Colors.white))),
+            indicatorColor: AppColors.secondary,
+            backgroundColor: AppColors.primary,
+            labelTextStyle:
+                WidgetStateProperty.all(TextStyle(color: Colors.white)),
+          ),
           child: NavigationBar(
             selectedIndex: currentIndex,
             onDestinationSelected: goToPage,
-            indicatorColor: AppColors.secondary,
             destinations: [
               NavigationDestination(
                 icon: Image.asset(

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ReclutadorCard extends StatelessWidget {
   final Map<String, String> reclutador;
   final int index;
-  final Function(Map<String, String>)? onUpdate; // <-- Callback para actualizar
+  final Function(Map<String, String>)? onUpdate; 
 
   const ReclutadorCard({
     super.key,
